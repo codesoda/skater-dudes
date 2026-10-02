@@ -1,0 +1,2 @@
+# Offline art preparation and art tests only. Normal builds consume existing PNGs.
+Pillow==11.3.0

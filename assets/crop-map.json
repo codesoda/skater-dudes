@@ -1,0 +1,1370 @@
+{
+  "asphalt": {
+    "cellBox": [
+      0,
+      0,
+      314,
+      314
+    ],
+    "cellIndex": 0,
+    "cleanBoundsInCell": [
+      65,
+      65,
+      259,
+      259
+    ],
+    "outputAlphaBounds": [
+      0,
+      0,
+      176,
+      176
+    ],
+    "sha256": "822fa9d5c4fd858be828eed2e6aa9286d1b75a32dd7d11c33534fe3e940cefc6",
+    "source": "assets/source/street-sheet.png",
+    "tileBodyBoxInSource": [
+      74,
+      76,
+      250,
+      252
+    ]
+  },
+  "bench": {
+    "cellBox": [
+      0,
+      314,
+      314,
+      627
+    ],
+    "cellIndex": 4,
+    "cleanBoundsInCell": [
+      42,
+      84,
+      283,
+      211
+    ],
+    "outputAlphaBounds": [
+      2,
+      2,
+      243,
+      129
+    ],
+    "sha256": "f57a37191614f0a59121aee28b65e13284aecc89d3d0f235aaec360f710a8cec",
+    "source": "assets/source/street-sheet.png"
+  },
+  "billboard": {
+    "cellBox": [
+      940,
+      627,
+      1254,
+      940
+    ],
+    "cellIndex": 11,
+    "cleanBoundsInCell": [
+      45,
+      38,
+      266,
+      246
+    ],
+    "outputAlphaBounds": [
+      2,
+      2,
+      223,
+      210
+    ],
+    "sha256": "8def85bb0f12c28a50012fd27436632d293bb902d1f018800f88534ec455e589",
+    "source": "assets/source/street-sheet.png"
+  },
+  "bin": {
+    "cellBox": [
+      627,
+      627,
+      940,
+      940
+    ],
+    "cellIndex": 10,
+    "cleanBoundsInCell": [
+      105,
+      81,
+      209,
+      241
+    ],
+    "outputAlphaBounds": [
+      2,
+      2,
+      106,
+      162
+    ],
+    "sha256": "2f5a9acf71a8ea010f42d8e00dbedebcaa3edd814948fd598e464d0cfe418ae9",
+    "source": "assets/source/street-sheet.png"
+  },
+  "board_edge": {
+    "cellBox": [
+      627,
+      940,
+      940,
+      1254
+    ],
+    "cellIndex": 14,
+    "cleanBoundsInCell": [
+      136,
+      51,
+      186,
+      223
+    ],
+    "outputAlphaBounds": [
+      2,
+      2,
+      174,
+      52
+    ],
+    "rotationClockwiseDegrees": 90,
+    "sha256": "93c634353d53ca013f79df210c2b94856ccb24ea4f4c210697a524ee3ffdb1bd",
+    "source": "assets/source/skater-sheet.png"
+  },
+  "board_flat": {
+    "cellBox": [
+      0,
+      940,
+      314,
+      1254
+    ],
+    "cellIndex": 12,
+    "cleanBoundsInCell": [
+      49,
+      119,
+      279,
+      174
+    ],
+    "outputAlphaBounds": [
+      2,
+      2,
+      232,
+      57
+    ],
+    "sha256": "0c78b966a8603911fa16dac70daf7c0787baf668f7a671e494e9685720389e80",
+    "source": "assets/source/skater-sheet.png"
+  },
+  "board_flip": {
+    "cellBox": [
+      314,
+      940,
+      627,
+      1254
+    ],
+    "cellIndex": 13,
+    "cleanBoundsInCell": [
+      37,
+      102,
+      276,
+      176
+    ],
+    "outputAlphaBounds": [
+      2,
+      2,
+      241,
+      76
+    ],
+    "sha256": "8b5e24303b46ccc6e28e58515085345b1fa347fb648976b1f851c281fe4ba7ff",
+    "source": "assets/source/skater-sheet.png"
+  },
+  "board_manual": {
+    "cellBox": [
+      940,
+      940,
+      1254,
+      1254
+    ],
+    "cellIndex": 15,
+    "cleanBoundsInCell": [
+      47,
+      95,
+      266,
+      188
+    ],
+    "outputAlphaBounds": [
+      2,
+      2,
+      221,
+      95
+    ],
+    "sha256": "39503ab606574e2ada86522d864a2602c7cf701edbe5852bb36e54cd7e28f9ee",
+    "source": "assets/source/skater-sheet.png"
+  },
+  "checkpoint": {
+    "cellBox": [
+      627,
+      940,
+      940,
+      1254
+    ],
+    "cellIndex": 14,
+    "cleanBoundsInCell": [
+      110,
+      28,
+      232,
+      224
+    ],
+    "outputAlphaBounds": [
+      2,
+      2,
+      124,
+      198
+    ],
+    "sha256": "d487f16991d200bf4f7cf9540db5a815bb2b2a290a8e881a0c3c2c4bf4f80260",
+    "source": "assets/source/street-sheet.png"
+  },
+  "city": {
+    "outputAlphaBounds": [
+      0,
+      0,
+      960,
+      540
+    ],
+    "resize": "nearest",
+    "sha256": "85161d475f4c3f8dd391380abd03c1926d5dae0ecf0c62bf1c39c8584e2af854",
+    "source": "assets/source/city.png"
+  },
+  "concrete": {
+    "cellBox": [
+      314,
+      0,
+      627,
+      314
+    ],
+    "cellIndex": 1,
+    "cleanBoundsInCell": [
+      57,
+      65,
+      252,
+      259
+    ],
+    "outputAlphaBounds": [
+      0,
+      0,
+      176,
+      176
+    ],
+    "sha256": "0b577b5bcf5596c662499b8acc23ed25e8320920110c4f17ecbc87159e6ac7ce",
+    "source": "assets/source/street-sheet.png",
+    "tileBodyBoxInSource": [
+      380,
+      76,
+      556,
+      252
+    ]
+  },
+  "cone": {
+    "cellBox": [
+      940,
+      0,
+      1254,
+      314
+    ],
+    "cellIndex": 3,
+    "cleanBoundsInCell": [
+      95,
+      110,
+      216,
+      250
+    ],
+    "outputAlphaBounds": [
+      2,
+      2,
+      123,
+      142
+    ],
+    "sha256": "5298d25fc7846b5b19a5da346219c846e6a714aa01313983ffdc2f9d27522660",
+    "source": "assets/source/street-sheet.png"
+  },
+  "crack": {
+    "cellBox": [
+      0,
+      627,
+      314,
+      940
+    ],
+    "cellIndex": 8,
+    "cleanBoundsInCell": [
+      65,
+      145,
+      254,
+      171
+    ],
+    "outputAlphaBounds": [
+      2,
+      2,
+      191,
+      28
+    ],
+    "sha256": "d7004fd546a9686d52e88dd8db7e314564a0086316735d54278c53b2c578480e",
+    "source": "assets/source/street-sheet.png"
+  },
+  "curb": {
+    "cellBox": [
+      627,
+      0,
+      940,
+      314
+    ],
+    "cellIndex": 2,
+    "cleanBoundsInCell": [
+      25,
+      181,
+      290,
+      246
+    ],
+    "outputAlphaBounds": [
+      2,
+      2,
+      267,
+      67
+    ],
+    "sha256": "79a4ae8b0523677aed3f541494c40799c5fd7934e237cbe2ddecf45fc988c8b2",
+    "source": "assets/source/street-sheet.png"
+  },
+  "dave_catch": {
+    "airLiftPixels": 30,
+    "baseline": 292,
+    "cellBox": [
+      627,
+      314,
+      940,
+      627
+    ],
+    "cellIndex": 6,
+    "cleanBoundsInCell": [
+      48,
+      26,
+      243,
+      260
+    ],
+    "derivation": "local HSV clothing palette v1; no new generation",
+    "derivedFrom": "skater_catch",
+    "outputAlphaBounds": [
+      69,
+      28,
+      264,
+      262
+    ],
+    "palette": "teal helmet / coral hoodie",
+    "pasteAt": [
+      69,
+      28
+    ],
+    "sha256": "8892370a61afcb59f46265ea06387ff50995b445d84ca5bb40aff3afce2d1613",
+    "source": "assets/source/skater-sheet.png",
+    "sourceFootX": 131,
+    "uniformSourceScale": 1
+  },
+  "dave_crash": {
+    "airLiftPixels": 0,
+    "baseline": 292,
+    "cellBox": [
+      940,
+      627,
+      1254,
+      940
+    ],
+    "cellIndex": 11,
+    "cleanBoundsInCell": [
+      18,
+      67,
+      283,
+      264
+    ],
+    "derivation": "local HSV clothing palette v1; no new generation",
+    "derivedFrom": "skater_crash",
+    "outputAlphaBounds": [
+      68,
+      95,
+      333,
+      292
+    ],
+    "palette": "teal helmet / coral hoodie",
+    "pasteAt": [
+      68,
+      95
+    ],
+    "sha256": "44f9f9ad7bf9bc0d38d648abd92f0d842acdef2d155d9f59297fdab3c143fbd8",
+    "source": "assets/source/skater-sheet.png",
+    "sourceFootX": 132,
+    "uniformSourceScale": 1
+  },
+  "dave_crouch": {
+    "airLiftPixels": 0,
+    "baseline": 292,
+    "cellBox": [
+      940,
+      0,
+      1254,
+      314
+    ],
+    "cellIndex": 3,
+    "cleanBoundsInCell": [
+      72,
+      83,
+      241,
+      289
+    ],
+    "derivation": "local HSV clothing palette v1; no new generation",
+    "derivedFrom": "skater_crouch",
+    "outputAlphaBounds": [
+      129,
+      86,
+      298,
+      292
+    ],
+    "palette": "teal helmet / coral hoodie",
+    "pasteAt": [
+      129,
+      86
+    ],
+    "sha256": "1a0e3d1f5a1df1247f9fe689ad69d04e2c0304d567cdcfe1b6c213b2a51b5679",
+    "source": "assets/source/skater-sheet.png",
+    "sourceFootX": 71,
+    "uniformSourceScale": 1
+  },
+  "dave_flip": {
+    "airLiftPixels": 30,
+    "baseline": 292,
+    "cellBox": [
+      314,
+      314,
+      627,
+      627
+    ],
+    "cellIndex": 5,
+    "cleanBoundsInCell": [
+      39,
+      21,
+      281,
+      256
+    ],
+    "derivation": "local HSV clothing palette v1; no new generation",
+    "derivedFrom": "skater_flip",
+    "outputAlphaBounds": [
+      134,
+      27,
+      376,
+      262
+    ],
+    "palette": "teal helmet / coral hoodie",
+    "pasteAt": [
+      134,
+      27
+    ],
+    "sha256": "e9ebc7dcdf1ad712e36d57ada06091c78a2f49330d12f797f4ae14aa4ca576b8",
+    "source": "assets/source/skater-sheet.png",
+    "sourceFootX": 66,
+    "uniformSourceScale": 1
+  },
+  "dave_grind": {
+    "airLiftPixels": 0,
+    "baseline": 292,
+    "cellBox": [
+      0,
+      627,
+      314,
+      940
+    ],
+    "cellIndex": 8,
+    "cleanBoundsInCell": [
+      43,
+      25,
+      288,
+      258
+    ],
+    "derivation": "local HSV clothing palette v1; no new generation",
+    "derivedFrom": "skater_grind",
+    "outputAlphaBounds": [
+      80,
+      59,
+      325,
+      292
+    ],
+    "palette": "teal helmet / coral hoodie",
+    "pasteAt": [
+      80,
+      59
+    ],
+    "sha256": "e54ef602703f54f62e4511e0d0fba9735b6b8a3ad5fd8e850ea781472b124b68",
+    "source": "assets/source/skater-sheet.png",
+    "sourceFootX": 120,
+    "uniformSourceScale": 1
+  },
+  "dave_lean_back": {
+    "airLiftPixels": 0,
+    "baseline": 292,
+    "cellBox": [
+      627,
+      627,
+      940,
+      940
+    ],
+    "cellIndex": 10,
+    "cleanBoundsInCell": [
+      30,
+      22,
+      264,
+      257
+    ],
+    "derivation": "local HSV clothing palette v1; no new generation",
+    "derivedFrom": "skater_lean_back",
+    "outputAlphaBounds": [
+      35,
+      57,
+      269,
+      292
+    ],
+    "palette": "teal helmet / coral hoodie",
+    "pasteAt": [
+      35,
+      57
+    ],
+    "sha256": "ce27daf3acc230e221b94e394773998b6dfbffdf41291e49130f6ce3895c0135",
+    "source": "assets/source/skater-sheet.png",
+    "sourceFootX": 165,
+    "uniformSourceScale": 1
+  },
+  "dave_lean_forward": {
+    "airLiftPixels": 0,
+    "baseline": 292,
+    "cellBox": [
+      314,
+      627,
+      627,
+      940
+    ],
+    "cellIndex": 9,
+    "cleanBoundsInCell": [
+      34,
+      39,
+      286,
+      257
+    ],
+    "derivation": "local HSV clothing palette v1; no new generation",
+    "derivedFrom": "skater_lean_forward",
+    "outputAlphaBounds": [
+      94,
+      74,
+      346,
+      292
+    ],
+    "palette": "teal helmet / coral hoodie",
+    "pasteAt": [
+      94,
+      74
+    ],
+    "sha256": "fce4e7494fb7b2ff4b0e24923dcdc99e38fb44285dd733ba810f388d3cfdfa40",
+    "source": "assets/source/skater-sheet.png",
+    "sourceFootX": 106,
+    "uniformSourceScale": 1
+  },
+  "dave_manual": {
+    "airLiftPixels": 0,
+    "baseline": 292,
+    "cellBox": [
+      940,
+      314,
+      1254,
+      627
+    ],
+    "cellIndex": 7,
+    "cleanBoundsInCell": [
+      30,
+      21,
+      266,
+      294
+    ],
+    "derivation": "local HSV clothing palette v1; no new generation",
+    "derivedFrom": "skater_manual",
+    "outputAlphaBounds": [
+      75,
+      19,
+      311,
+      292
+    ],
+    "palette": "teal helmet / coral hoodie",
+    "pasteAt": [
+      75,
+      19
+    ],
+    "sha256": "3f7eceaaed449489cf2b9720a589434e70491d6a6371dd7829e9d77a0a4e6df6",
+    "source": "assets/source/skater-sheet.png",
+    "sourceFootX": 125,
+    "uniformSourceScale": 1
+  },
+  "dave_ollie": {
+    "airLiftPixels": 30,
+    "baseline": 292,
+    "cellBox": [
+      0,
+      314,
+      314,
+      627
+    ],
+    "cellIndex": 4,
+    "cleanBoundsInCell": [
+      43,
+      17,
+      253,
+      219
+    ],
+    "derivation": "local HSV clothing palette v1; no new generation",
+    "derivedFrom": "skater_ollie",
+    "outputAlphaBounds": [
+      71,
+      60,
+      281,
+      262
+    ],
+    "palette": "teal helmet / coral hoodie",
+    "pasteAt": [
+      71,
+      60
+    ],
+    "sha256": "4689482f519c4b1038ce37df62d40f5477e85152279020896d0e7eae2c185554",
+    "source": "assets/source/skater-sheet.png",
+    "sourceFootX": 129,
+    "uniformSourceScale": 1
+  },
+  "dave_push1": {
+    "airLiftPixels": 0,
+    "baseline": 292,
+    "cellBox": [
+      314,
+      0,
+      627,
+      314
+    ],
+    "cellIndex": 1,
+    "cleanBoundsInCell": [
+      26,
+      33,
+      264,
+      288
+    ],
+    "derivation": "local HSV clothing palette v1; no new generation",
+    "derivedFrom": "skater_push1",
+    "outputAlphaBounds": [
+      39,
+      37,
+      277,
+      292
+    ],
+    "palette": "teal helmet / coral hoodie",
+    "pasteAt": [
+      39,
+      37
+    ],
+    "sha256": "d43a141dcdf5333891c607e66030ea941e8d816bf94ef05d3be1bd13f21efc8a",
+    "source": "assets/source/skater-sheet.png",
+    "sourceFootX": 161,
+    "uniformSourceScale": 1
+  },
+  "dave_push2": {
+    "airLiftPixels": 0,
+    "baseline": 292,
+    "cellBox": [
+      627,
+      0,
+      940,
+      314
+    ],
+    "cellIndex": 2,
+    "cleanBoundsInCell": [
+      72,
+      28,
+      231,
+      288
+    ],
+    "derivation": "local HSV clothing palette v1; no new generation",
+    "derivedFrom": "skater_push2",
+    "outputAlphaBounds": [
+      106,
+      32,
+      265,
+      292
+    ],
+    "palette": "teal helmet / coral hoodie",
+    "pasteAt": [
+      106,
+      32
+    ],
+    "sha256": "a0fb257e13c12b0715e822729bfdddb3b55c2bfe4538aceec94baa2b868a0b8f",
+    "source": "assets/source/skater-sheet.png",
+    "sourceFootX": 94,
+    "uniformSourceScale": 1
+  },
+  "dave_roll": {
+    "airLiftPixels": 0,
+    "baseline": 292,
+    "cellBox": [
+      0,
+      0,
+      314,
+      314
+    ],
+    "cellIndex": 0,
+    "cleanBoundsInCell": [
+      105,
+      13,
+      235,
+      292
+    ],
+    "derivation": "local HSV clothing palette v1; no new generation",
+    "derivedFrom": "skater_roll",
+    "outputAlphaBounds": [
+      135,
+      13,
+      265,
+      292
+    ],
+    "palette": "teal helmet / coral hoodie",
+    "pasteAt": [
+      135,
+      13
+    ],
+    "sha256": "ac15ccf58d19528d5600e947639a5c3daec209cea919ea9890cdd2a372f8935d",
+    "source": "assets/source/skater-sheet.png",
+    "sourceFootX": 65,
+    "uniformSourceScale": 1
+  },
+  "finish": {
+    "cellBox": [
+      940,
+      940,
+      1254,
+      1254
+    ],
+    "cellIndex": 15,
+    "cleanBoundsInCell": [
+      48,
+      35,
+      264,
+      221
+    ],
+    "outputAlphaBounds": [
+      2,
+      2,
+      218,
+      188
+    ],
+    "sha256": "5d6f8e411da11cf2e21510fb01f22f1394709ea0a548175ff4c8c0951de3776e",
+    "source": "assets/source/street-sheet.png"
+  },
+  "gap_center": {
+    "cleanBoundsInCell": [
+      54,
+      127,
+      836,
+      486
+    ],
+    "normalizedDepth": 256,
+    "outputAlphaBounds": [
+      2,
+      2,
+      560,
+      258
+    ],
+    "recessPixels": 48,
+    "regionBox": [
+      0,
+      630,
+      860,
+      1254
+    ],
+    "seamBlendColumns": 8,
+    "sha256": "96c1872b806dc2b9bef2d96a58dd951f7464bc07fd2ce9a6044f4d8011e970dc",
+    "source": "assets/source/obstacles-sheet.png",
+    "strategy": "region-alpha-bounds",
+    "trimTop": 65,
+    "voidBandInCleanCrop": [
+      0,
+      170,
+      782,
+      218
+    ]
+  },
+  "gap_left": {
+    "cleanBoundsInCell": [
+      54,
+      153,
+      305,
+      577
+    ],
+    "normalizedDepth": 256,
+    "outputAlphaBounds": [
+      2,
+      2,
+      154,
+      258
+    ],
+    "regionBox": [
+      860,
+      0,
+      1254,
+      630
+    ],
+    "sha256": "093765322c2a835bc6148aeeb109965ce5031269c7a5dcee3a0e86008b3f898c",
+    "source": "assets/source/obstacles-sheet.png",
+    "strategy": "region-alpha-bounds"
+  },
+  "gap_right": {
+    "cleanBoundsInCell": [
+      81,
+      47,
+      337,
+      495
+    ],
+    "normalizedDepth": 256,
+    "outputAlphaBounds": [
+      2,
+      2,
+      148,
+      258
+    ],
+    "regionBox": [
+      860,
+      630,
+      1254,
+      1254
+    ],
+    "sha256": "81d5441900e4345220482c8e8e9364e6042a540445ee1ad181ae1d03792b3e50",
+    "source": "assets/source/obstacles-sheet.png",
+    "strategy": "region-alpha-bounds"
+  },
+  "jersey_barrier": {
+    "cleanBoundsInCell": [
+      66,
+      233,
+      820,
+      514
+    ],
+    "outputAlphaBounds": [
+      2,
+      2,
+      756,
+      283
+    ],
+    "regionBox": [
+      0,
+      0,
+      860,
+      630
+    ],
+    "sha256": "e68d2c0660d0dbaadddbdcb6ed15b975d3730408443e472c7d1d102714c3c09e",
+    "source": "assets/source/obstacles-sheet.png",
+    "strategy": "region-alpha-bounds"
+  },
+  "ledge": {
+    "cellBox": [
+      627,
+      314,
+      940,
+      627
+    ],
+    "cellIndex": 6,
+    "cleanBoundsInCell": [
+      23,
+      118,
+      292,
+      203
+    ],
+    "outputAlphaBounds": [
+      2,
+      2,
+      271,
+      87
+    ],
+    "sha256": "a2d2761217266d0fb2b55cfd4e145acda56756b232c603a10e05e1f73523f410",
+    "source": "assets/source/street-sheet.png"
+  },
+  "low_bar": {
+    "cellBox": [
+      0,
+      940,
+      314,
+      1254
+    ],
+    "cellIndex": 12,
+    "cleanBoundsInCell": [
+      48,
+      65,
+      278,
+      201
+    ],
+    "outputAlphaBounds": [
+      2,
+      2,
+      232,
+      138
+    ],
+    "sha256": "907591c372484349179088a84165ceb4e33afffc5c2798dc2ae65162304c5119",
+    "source": "assets/source/street-sheet.png"
+  },
+  "rail": {
+    "cellBox": [
+      314,
+      314,
+      627,
+      627
+    ],
+    "cellIndex": 5,
+    "cleanBoundsInCell": [
+      29,
+      126,
+      285,
+      206
+    ],
+    "outputAlphaBounds": [
+      2,
+      2,
+      258,
+      82
+    ],
+    "sha256": "eeff5e2c31a7db0836fc2d59e4f7854c87588c071ea5948392e5fca0e2c834c1",
+    "source": "assets/source/street-sheet.png"
+  },
+  "ramp": {
+    "cellBox": [
+      314,
+      940,
+      627,
+      1254
+    ],
+    "cellIndex": 13,
+    "cleanBoundsInCell": [
+      28,
+      85,
+      285,
+      205
+    ],
+    "outputAlphaBounds": [
+      2,
+      2,
+      259,
+      122
+    ],
+    "sha256": "a05d3cc72a8911576b9a188aab1bd7ef059e2c261d0710f6b972e68238f206f1",
+    "source": "assets/source/street-sheet.png"
+  },
+  "skater_catch": {
+    "airLiftPixels": 30,
+    "baseline": 292,
+    "cellBox": [
+      627,
+      314,
+      940,
+      627
+    ],
+    "cellIndex": 6,
+    "cleanBoundsInCell": [
+      48,
+      26,
+      243,
+      260
+    ],
+    "outputAlphaBounds": [
+      69,
+      28,
+      264,
+      262
+    ],
+    "pasteAt": [
+      69,
+      28
+    ],
+    "sha256": "792436335c8d881ace8d983fddf05cbce0430a467cefc979a133512c48a138b4",
+    "source": "assets/source/skater-sheet.png",
+    "sourceFootX": 131,
+    "uniformSourceScale": 1
+  },
+  "skater_crash": {
+    "airLiftPixels": 0,
+    "baseline": 292,
+    "cellBox": [
+      940,
+      627,
+      1254,
+      940
+    ],
+    "cellIndex": 11,
+    "cleanBoundsInCell": [
+      18,
+      67,
+      283,
+      264
+    ],
+    "outputAlphaBounds": [
+      68,
+      95,
+      333,
+      292
+    ],
+    "pasteAt": [
+      68,
+      95
+    ],
+    "sha256": "6e59efc21243c2824308854ce7b4edc2282ecfe107e3b204fb16fc8b1c8e24f9",
+    "source": "assets/source/skater-sheet.png",
+    "sourceFootX": 132,
+    "uniformSourceScale": 1
+  },
+  "skater_crouch": {
+    "airLiftPixels": 0,
+    "baseline": 292,
+    "cellBox": [
+      940,
+      0,
+      1254,
+      314
+    ],
+    "cellIndex": 3,
+    "cleanBoundsInCell": [
+      72,
+      83,
+      241,
+      289
+    ],
+    "outputAlphaBounds": [
+      129,
+      86,
+      298,
+      292
+    ],
+    "pasteAt": [
+      129,
+      86
+    ],
+    "sha256": "be9a731b6b9f8b6d38105d2aed6774f02293f5bc91d393761695fdee96e0bbbe",
+    "source": "assets/source/skater-sheet.png",
+    "sourceFootX": 71,
+    "uniformSourceScale": 1
+  },
+  "skater_flip": {
+    "airLiftPixels": 30,
+    "baseline": 292,
+    "cellBox": [
+      314,
+      314,
+      627,
+      627
+    ],
+    "cellIndex": 5,
+    "cleanBoundsInCell": [
+      39,
+      21,
+      281,
+      256
+    ],
+    "outputAlphaBounds": [
+      134,
+      27,
+      376,
+      262
+    ],
+    "pasteAt": [
+      134,
+      27
+    ],
+    "sha256": "b395f63f2fdb3be4c0fbbde71155c3ead91087b578010302d4fef4a7a7918cf1",
+    "source": "assets/source/skater-sheet.png",
+    "sourceFootX": 66,
+    "uniformSourceScale": 1
+  },
+  "skater_grind": {
+    "airLiftPixels": 0,
+    "baseline": 292,
+    "cellBox": [
+      0,
+      627,
+      314,
+      940
+    ],
+    "cellIndex": 8,
+    "cleanBoundsInCell": [
+      43,
+      25,
+      288,
+      258
+    ],
+    "outputAlphaBounds": [
+      80,
+      59,
+      325,
+      292
+    ],
+    "pasteAt": [
+      80,
+      59
+    ],
+    "sha256": "d7a70df3cf2c06d06de43f094c2c3cb1a6089772d10c800f4cce560d83a1695d",
+    "source": "assets/source/skater-sheet.png",
+    "sourceFootX": 120,
+    "uniformSourceScale": 1
+  },
+  "skater_lean_back": {
+    "airLiftPixels": 0,
+    "baseline": 292,
+    "cellBox": [
+      627,
+      627,
+      940,
+      940
+    ],
+    "cellIndex": 10,
+    "cleanBoundsInCell": [
+      30,
+      22,
+      264,
+      257
+    ],
+    "outputAlphaBounds": [
+      35,
+      57,
+      269,
+      292
+    ],
+    "pasteAt": [
+      35,
+      57
+    ],
+    "sha256": "f521fa8d028c71b5b35a2bac3a8d58fd149c9b0c44e1904325d8bdeafdc413ac",
+    "source": "assets/source/skater-sheet.png",
+    "sourceFootX": 165,
+    "uniformSourceScale": 1
+  },
+  "skater_lean_forward": {
+    "airLiftPixels": 0,
+    "baseline": 292,
+    "cellBox": [
+      314,
+      627,
+      627,
+      940
+    ],
+    "cellIndex": 9,
+    "cleanBoundsInCell": [
+      34,
+      39,
+      286,
+      257
+    ],
+    "outputAlphaBounds": [
+      94,
+      74,
+      346,
+      292
+    ],
+    "pasteAt": [
+      94,
+      74
+    ],
+    "sha256": "9446d80850d5e7f5d5b8cffbe6969fd214667840d08ea7fe921c684640d99db9",
+    "source": "assets/source/skater-sheet.png",
+    "sourceFootX": 106,
+    "uniformSourceScale": 1
+  },
+  "skater_manual": {
+    "airLiftPixels": 0,
+    "baseline": 292,
+    "cellBox": [
+      940,
+      314,
+      1254,
+      627
+    ],
+    "cellIndex": 7,
+    "cleanBoundsInCell": [
+      30,
+      21,
+      266,
+      294
+    ],
+    "outputAlphaBounds": [
+      75,
+      19,
+      311,
+      292
+    ],
+    "pasteAt": [
+      75,
+      19
+    ],
+    "sha256": "73321bd40a248bfaada5c5ef0d074e5a2cb56ef2521fb636f924745227f23de5",
+    "source": "assets/source/skater-sheet.png",
+    "sourceFootX": 125,
+    "uniformSourceScale": 1
+  },
+  "skater_ollie": {
+    "airLiftPixels": 30,
+    "baseline": 292,
+    "cellBox": [
+      0,
+      314,
+      314,
+      627
+    ],
+    "cellIndex": 4,
+    "cleanBoundsInCell": [
+      43,
+      17,
+      253,
+      219
+    ],
+    "outputAlphaBounds": [
+      71,
+      60,
+      281,
+      262
+    ],
+    "pasteAt": [
+      71,
+      60
+    ],
+    "sha256": "1cc134751a1da5d689b64ced818df3eac5afc75974c5afc3bf27e4d70d9d59d1",
+    "source": "assets/source/skater-sheet.png",
+    "sourceFootX": 129,
+    "uniformSourceScale": 1
+  },
+  "skater_push1": {
+    "airLiftPixels": 0,
+    "baseline": 292,
+    "cellBox": [
+      314,
+      0,
+      627,
+      314
+    ],
+    "cellIndex": 1,
+    "cleanBoundsInCell": [
+      26,
+      33,
+      264,
+      288
+    ],
+    "outputAlphaBounds": [
+      39,
+      37,
+      277,
+      292
+    ],
+    "pasteAt": [
+      39,
+      37
+    ],
+    "sha256": "ab72e52dfe767f1eeef78a10086d1a29a0d77109531f93365b642bbd820c2860",
+    "source": "assets/source/skater-sheet.png",
+    "sourceFootX": 161,
+    "uniformSourceScale": 1
+  },
+  "skater_push2": {
+    "airLiftPixels": 0,
+    "baseline": 292,
+    "cellBox": [
+      627,
+      0,
+      940,
+      314
+    ],
+    "cellIndex": 2,
+    "cleanBoundsInCell": [
+      72,
+      28,
+      231,
+      288
+    ],
+    "outputAlphaBounds": [
+      106,
+      32,
+      265,
+      292
+    ],
+    "pasteAt": [
+      106,
+      32
+    ],
+    "sha256": "796ef97f41c81b7f766a02ae1445b59c962f0a70d478c6a7b6b9b71a6d8f6931",
+    "source": "assets/source/skater-sheet.png",
+    "sourceFootX": 94,
+    "uniformSourceScale": 1
+  },
+  "skater_roll": {
+    "airLiftPixels": 0,
+    "baseline": 292,
+    "cellBox": [
+      0,
+      0,
+      314,
+      314
+    ],
+    "cellIndex": 0,
+    "cleanBoundsInCell": [
+      105,
+      13,
+      235,
+      292
+    ],
+    "outputAlphaBounds": [
+      135,
+      13,
+      265,
+      292
+    ],
+    "pasteAt": [
+      135,
+      13
+    ],
+    "sha256": "7e1d2c9b4fd441dae90f7a1f66ef0b2edf15e8cf39dec05a31027dec6ec1e9f2",
+    "source": "assets/source/skater-sheet.png",
+    "sourceFootX": 65,
+    "uniformSourceScale": 1
+  },
+  "stairs": {
+    "cellBox": [
+      940,
+      314,
+      1254,
+      627
+    ],
+    "cellIndex": 7,
+    "cleanBoundsInCell": [
+      43,
+      75,
+      271,
+      204
+    ],
+    "outputAlphaBounds": [
+      2,
+      2,
+      230,
+      131
+    ],
+    "sha256": "0a98c2741766bd042aff7bb1340598f908ee0aa0f910a698c5a0d0869fcec7d0",
+    "source": "assets/source/street-sheet.png"
+  },
+  "streetlamp": {
+    "cellBox": [
+      314,
+      627,
+      627,
+      940
+    ],
+    "cellIndex": 9,
+    "cleanBoundsInCell": [
+      118,
+      7,
+      230,
+      259
+    ],
+    "outputAlphaBounds": [
+      2,
+      2,
+      114,
+      254
+    ],
+    "sha256": "60fe923f99d513672f90b19bf3f5fd2ee555d1f2a03b1aeee7e44bd5e49e100f",
+    "source": "assets/source/street-sheet.png"
+  }
+}

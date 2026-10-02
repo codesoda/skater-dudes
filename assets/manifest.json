@@ -1,0 +1,799 @@
+{
+  "audio": {
+    "bank": {
+      "duration": 0.78,
+      "gain": 0.55,
+      "loop": false,
+      "loopEnd": 0.0,
+      "loopStart": 0.0,
+      "path": "assets/audio/bank.wav",
+      "sha256": "ef09aee81fefa54d85ed070668375f328f529ec7a651e1ef1e37868718843eb7"
+    },
+    "crack": {
+      "duration": 0.19002267573696144,
+      "gain": 0.6,
+      "loop": false,
+      "loopEnd": 0.0,
+      "loopStart": 0.0,
+      "path": "assets/audio/crack.wav",
+      "sha256": "75488399fe9cd246a02debb1a391b57e2370e0a3c3158ae7e226ad2dfb24ed07"
+    },
+    "crash": {
+      "duration": 0.94,
+      "gain": 0.65,
+      "loop": false,
+      "loopEnd": 0.0,
+      "loopStart": 0.0,
+      "path": "assets/audio/crash.wav",
+      "sha256": "78b29024b31f38a8f477008d7beb832f38b4549af402d3561ef93143cac189cf"
+    },
+    "grind": {
+      "duration": 1.6,
+      "gain": 0.3,
+      "loop": true,
+      "loopEnd": 1.6,
+      "loopStart": 0.0,
+      "path": "assets/audio/grind.wav",
+      "sha256": "efba7fcdfd1a87908deeb1fb9942879c7f352a0c22a23e776b6dd4763891367e"
+    },
+    "land": {
+      "duration": 0.32,
+      "gain": 0.68,
+      "loop": false,
+      "loopEnd": 0.0,
+      "loopStart": 0.0,
+      "path": "assets/audio/land.wav",
+      "sha256": "57cfd797d849227a74c18f643a605ab4f3a59267bf2612a60596f2f1005df3be"
+    },
+    "music": {
+      "duration": 10.666666666666666,
+      "gain": 0.3,
+      "loop": true,
+      "loopEnd": 10.666666666666666,
+      "loopStart": 0.0,
+      "path": "assets/audio/music.wav",
+      "sha256": "62e5513bf9867818214c30dd0b9af768e4d74ada56b8a0ec69b9412505dab73f"
+    },
+    "ollie": {
+      "duration": 0.24997732426303854,
+      "gain": 0.64,
+      "loop": false,
+      "loopEnd": 0.0,
+      "loopStart": 0.0,
+      "path": "assets/audio/ollie.wav",
+      "sha256": "b6ae124df7e885541ef1251de0665f6e78b1476799cd6324aceb455d143d0483"
+    },
+    "push": {
+      "duration": 0.23002267573696145,
+      "gain": 0.46,
+      "loop": false,
+      "loopEnd": 0.0,
+      "loopStart": 0.0,
+      "path": "assets/audio/push.wav",
+      "sha256": "75c3a805c92a0b9896fdeb12448f8babf82c60895050d7ea5e010be7d0f3d702"
+    },
+    "rolling": {
+      "duration": 1.6,
+      "gain": 0.25,
+      "loop": true,
+      "loopEnd": 1.6,
+      "loopStart": 0.0,
+      "path": "assets/audio/rolling.wav",
+      "sha256": "a21d343210c67525a48e09d5bfb6d9f5a06c72f477d9a6bbe975bead455fdbfb"
+    }
+  },
+  "characters": {
+    "dave": {
+      "id": "dave",
+      "name": "Dave",
+      "poses": {
+        "catch": "dave_catch",
+        "crash": "dave_crash",
+        "crouch": "dave_crouch",
+        "flip": "dave_flip",
+        "grind": "dave_grind",
+        "lean_back": "dave_lean_back",
+        "lean_forward": "dave_lean_forward",
+        "manual": "dave_manual",
+        "ollie": "dave_ollie",
+        "push1": "dave_push1",
+        "push2": "dave_push2",
+        "roll": "dave_roll"
+      },
+      "previewKey": "dave_roll"
+    },
+    "jeff": {
+      "id": "jeff",
+      "name": "Jeff",
+      "poses": {
+        "catch": "skater_catch",
+        "crash": "skater_crash",
+        "crouch": "skater_crouch",
+        "flip": "skater_flip",
+        "grind": "skater_grind",
+        "lean_back": "skater_lean_back",
+        "lean_forward": "skater_lean_forward",
+        "manual": "skater_manual",
+        "ollie": "skater_ollie",
+        "push1": "skater_push1",
+        "push2": "skater_push2",
+        "roll": "skater_roll"
+      },
+      "previewKey": "skater_roll"
+    }
+  },
+  "images": {
+    "asphalt": {
+      "anchor": [
+        0,
+        0
+      ],
+      "drawHeight": 64,
+      "drawWidth": 64,
+      "height": 176,
+      "path": "assets/processed/asphalt.png",
+      "tile": true,
+      "width": 176
+    },
+    "bench": {
+      "anchor": [
+        122.5,
+        129
+      ],
+      "contactTop": 62,
+      "drawHeight": 70.57959183673469,
+      "drawWidth": 132,
+      "height": 131,
+      "path": "assets/processed/bench.png",
+      "width": 245
+    },
+    "billboard": {
+      "anchor": [
+        112.5,
+        210
+      ],
+      "drawHeight": 111.18222222222222,
+      "drawWidth": 118,
+      "height": 212,
+      "path": "assets/processed/billboard.png",
+      "width": 225
+    },
+    "bin": {
+      "anchor": [
+        54.0,
+        162
+      ],
+      "drawHeight": 63.77777777777778,
+      "drawWidth": 42,
+      "height": 164,
+      "path": "assets/processed/bin.png",
+      "width": 108
+    },
+    "board_edge": {
+      "anchor": [
+        88.0,
+        5
+      ],
+      "drawHeight": 19.636363636363637,
+      "drawWidth": 64,
+      "groundAnchor": [
+        88.0,
+        52
+      ],
+      "height": 54,
+      "path": "assets/processed/board_edge.png",
+      "width": 176
+    },
+    "board_flat": {
+      "anchor": [
+        117.0,
+        7
+      ],
+      "drawHeight": 16.136752136752136,
+      "drawWidth": 64,
+      "groundAnchor": [
+        117.0,
+        57
+      ],
+      "height": 59,
+      "path": "assets/processed/board_flat.png",
+      "truckAnchor": [
+        117.0,
+        32
+      ],
+      "width": 234
+    },
+    "board_flip": {
+      "anchor": [
+        121.5,
+        39.0
+      ],
+      "drawHeight": 20.54320987654321,
+      "drawWidth": 64,
+      "groundAnchor": [
+        121.5,
+        76
+      ],
+      "height": 78,
+      "path": "assets/processed/board_flip.png",
+      "width": 243
+    },
+    "board_manual": {
+      "anchor": [
+        111.5,
+        34
+      ],
+      "drawHeight": 27.838565022421523,
+      "drawWidth": 64,
+      "groundAnchor": [
+        111.5,
+        95
+      ],
+      "height": 97,
+      "path": "assets/processed/board_manual.png",
+      "width": 223
+    },
+    "checkpoint": {
+      "anchor": [
+        63.0,
+        198
+      ],
+      "drawHeight": 73.01587301587301,
+      "drawWidth": 46,
+      "height": 200,
+      "path": "assets/processed/checkpoint.png",
+      "width": 126
+    },
+    "city": {
+      "anchor": [
+        0,
+        0
+      ],
+      "drawHeight": 540,
+      "drawWidth": 960,
+      "height": 540,
+      "path": "assets/processed/city.png",
+      "width": 960
+    },
+    "concrete": {
+      "anchor": [
+        0,
+        0
+      ],
+      "drawHeight": 64,
+      "drawWidth": 64,
+      "height": 176,
+      "path": "assets/processed/concrete.png",
+      "tile": true,
+      "width": 176
+    },
+    "cone": {
+      "anchor": [
+        62.5,
+        142
+      ],
+      "drawHeight": 32.256,
+      "drawWidth": 28,
+      "height": 144,
+      "path": "assets/processed/cone.png",
+      "width": 125
+    },
+    "crack": {
+      "anchor": [
+        96.5,
+        28
+      ],
+      "drawHeight": 10.259067357512953,
+      "drawWidth": 66,
+      "height": 30,
+      "path": "assets/processed/crack.png",
+      "width": 193
+    },
+    "curb": {
+      "anchor": [
+        134.5,
+        67
+      ],
+      "contactTop": 2,
+      "drawHeight": 30.780669144981413,
+      "drawWidth": 120,
+      "height": 69,
+      "path": "assets/processed/curb.png",
+      "width": 269
+    },
+    "dave_catch": {
+      "anchor": [
+        200,
+        292
+      ],
+      "boardSeparate": true,
+      "drawHeight": 80,
+      "drawWidth": 106.66666666666667,
+      "footLift": 8.0,
+      "height": 300,
+      "path": "assets/processed/dave_catch.png",
+      "width": 400
+    },
+    "dave_crash": {
+      "anchor": [
+        200,
+        292
+      ],
+      "boardSeparate": true,
+      "drawHeight": 80,
+      "drawWidth": 106.66666666666667,
+      "footLift": 0.0,
+      "height": 300,
+      "path": "assets/processed/dave_crash.png",
+      "width": 400
+    },
+    "dave_crouch": {
+      "anchor": [
+        200,
+        292
+      ],
+      "boardSeparate": true,
+      "drawHeight": 80,
+      "drawWidth": 106.66666666666667,
+      "footLift": 0.0,
+      "height": 300,
+      "path": "assets/processed/dave_crouch.png",
+      "width": 400
+    },
+    "dave_flip": {
+      "anchor": [
+        200,
+        292
+      ],
+      "boardSeparate": true,
+      "drawHeight": 80,
+      "drawWidth": 106.66666666666667,
+      "footLift": 8.0,
+      "height": 300,
+      "path": "assets/processed/dave_flip.png",
+      "width": 400
+    },
+    "dave_grind": {
+      "anchor": [
+        200,
+        292
+      ],
+      "boardSeparate": true,
+      "drawHeight": 80,
+      "drawWidth": 106.66666666666667,
+      "footLift": 0.0,
+      "height": 300,
+      "path": "assets/processed/dave_grind.png",
+      "width": 400
+    },
+    "dave_lean_back": {
+      "anchor": [
+        200,
+        292
+      ],
+      "boardSeparate": true,
+      "drawHeight": 80,
+      "drawWidth": 106.66666666666667,
+      "footLift": 0.0,
+      "height": 300,
+      "path": "assets/processed/dave_lean_back.png",
+      "width": 400
+    },
+    "dave_lean_forward": {
+      "anchor": [
+        200,
+        292
+      ],
+      "boardSeparate": true,
+      "drawHeight": 80,
+      "drawWidth": 106.66666666666667,
+      "footLift": 0.0,
+      "height": 300,
+      "path": "assets/processed/dave_lean_forward.png",
+      "width": 400
+    },
+    "dave_manual": {
+      "anchor": [
+        200,
+        292
+      ],
+      "boardSeparate": true,
+      "drawHeight": 80,
+      "drawWidth": 106.66666666666667,
+      "footLift": 0.0,
+      "height": 300,
+      "path": "assets/processed/dave_manual.png",
+      "width": 400
+    },
+    "dave_ollie": {
+      "anchor": [
+        200,
+        292
+      ],
+      "boardSeparate": true,
+      "drawHeight": 80,
+      "drawWidth": 106.66666666666667,
+      "footLift": 8.0,
+      "height": 300,
+      "path": "assets/processed/dave_ollie.png",
+      "width": 400
+    },
+    "dave_push1": {
+      "anchor": [
+        200,
+        292
+      ],
+      "boardSeparate": true,
+      "drawHeight": 80,
+      "drawWidth": 106.66666666666667,
+      "footLift": 0.0,
+      "height": 300,
+      "path": "assets/processed/dave_push1.png",
+      "width": 400
+    },
+    "dave_push2": {
+      "anchor": [
+        200,
+        292
+      ],
+      "boardSeparate": true,
+      "drawHeight": 80,
+      "drawWidth": 106.66666666666667,
+      "footLift": 0.0,
+      "height": 300,
+      "path": "assets/processed/dave_push2.png",
+      "width": 400
+    },
+    "dave_roll": {
+      "anchor": [
+        200,
+        292
+      ],
+      "boardSeparate": true,
+      "drawHeight": 80,
+      "drawWidth": 106.66666666666667,
+      "footLift": 0.0,
+      "height": 300,
+      "path": "assets/processed/dave_roll.png",
+      "width": 400
+    },
+    "finish": {
+      "anchor": [
+        110.0,
+        188
+      ],
+      "drawHeight": 95.0,
+      "drawWidth": 110,
+      "height": 190,
+      "path": "assets/processed/finish.png",
+      "width": 220
+    },
+    "gap_center": {
+      "anchor": [
+        0,
+        2
+      ],
+      "drawHeight": 58.90625,
+      "drawWidth": 127.328125,
+      "height": 260,
+      "path": "assets/processed/gap_center.png",
+      "repeatX": true,
+      "tileBox": [
+        2,
+        2,
+        560,
+        258
+      ],
+      "width": 562
+    },
+    "gap_left": {
+      "anchor": [
+        0,
+        2
+      ],
+      "collisionEdgeX": 104,
+      "drawHeight": 58.90625,
+      "drawWidth": 35.34375,
+      "groundLipY": 2,
+      "height": 260,
+      "path": "assets/processed/gap_left.png",
+      "width": 156
+    },
+    "gap_right": {
+      "anchor": [
+        0,
+        2
+      ],
+      "collisionEdgeX": 65,
+      "drawHeight": 58.90625,
+      "drawWidth": 33.984375,
+      "groundLipY": 2,
+      "height": 260,
+      "path": "assets/processed/gap_right.png",
+      "width": 150
+    },
+    "jersey_barrier": {
+      "anchor": [
+        379.0,
+        283
+      ],
+      "contactTop": 2,
+      "drawHeight": 60.15831134564644,
+      "drawWidth": 160,
+      "height": 285,
+      "path": "assets/processed/jersey_barrier.png",
+      "width": 758
+    },
+    "ledge": {
+      "anchor": [
+        136.5,
+        87
+      ],
+      "contactTop": 2,
+      "drawHeight": 45.64102564102564,
+      "drawWidth": 140,
+      "height": 89,
+      "path": "assets/processed/ledge.png",
+      "width": 273
+    },
+    "low_bar": {
+      "anchor": [
+        117.0,
+        138
+      ],
+      "beamBottom": 22,
+      "beamTop": 2,
+      "clearanceY": 22,
+      "drawHeight": 88.54700854700855,
+      "drawWidth": 148,
+      "height": 140,
+      "path": "assets/processed/low_bar.png",
+      "width": 234
+    },
+    "rail": {
+      "anchor": [
+        130.0,
+        82
+      ],
+      "beamBottom": 21,
+      "beamTop": 2,
+      "contactTop": 2,
+      "drawHeight": 47.815384615384616,
+      "drawWidth": 148,
+      "height": 84,
+      "path": "assets/processed/rail.png",
+      "width": 260
+    },
+    "ramp": {
+      "anchor": [
+        130.5,
+        122
+      ],
+      "drawHeight": 62.71264367816092,
+      "drawWidth": 132,
+      "height": 124,
+      "path": "assets/processed/ramp.png",
+      "width": 261
+    },
+    "skater_catch": {
+      "anchor": [
+        200,
+        292
+      ],
+      "boardSeparate": true,
+      "drawHeight": 80,
+      "drawWidth": 106.66666666666667,
+      "footLift": 8.0,
+      "height": 300,
+      "path": "assets/processed/skater_catch.png",
+      "width": 400
+    },
+    "skater_crash": {
+      "anchor": [
+        200,
+        292
+      ],
+      "boardSeparate": true,
+      "drawHeight": 80,
+      "drawWidth": 106.66666666666667,
+      "footLift": 0.0,
+      "height": 300,
+      "path": "assets/processed/skater_crash.png",
+      "width": 400
+    },
+    "skater_crouch": {
+      "anchor": [
+        200,
+        292
+      ],
+      "boardSeparate": true,
+      "drawHeight": 80,
+      "drawWidth": 106.66666666666667,
+      "footLift": 0.0,
+      "height": 300,
+      "path": "assets/processed/skater_crouch.png",
+      "width": 400
+    },
+    "skater_flip": {
+      "anchor": [
+        200,
+        292
+      ],
+      "boardSeparate": true,
+      "drawHeight": 80,
+      "drawWidth": 106.66666666666667,
+      "footLift": 8.0,
+      "height": 300,
+      "path": "assets/processed/skater_flip.png",
+      "width": 400
+    },
+    "skater_grind": {
+      "anchor": [
+        200,
+        292
+      ],
+      "boardSeparate": true,
+      "drawHeight": 80,
+      "drawWidth": 106.66666666666667,
+      "footLift": 0.0,
+      "height": 300,
+      "path": "assets/processed/skater_grind.png",
+      "width": 400
+    },
+    "skater_lean_back": {
+      "anchor": [
+        200,
+        292
+      ],
+      "boardSeparate": true,
+      "drawHeight": 80,
+      "drawWidth": 106.66666666666667,
+      "footLift": 0.0,
+      "height": 300,
+      "path": "assets/processed/skater_lean_back.png",
+      "width": 400
+    },
+    "skater_lean_forward": {
+      "anchor": [
+        200,
+        292
+      ],
+      "boardSeparate": true,
+      "drawHeight": 80,
+      "drawWidth": 106.66666666666667,
+      "footLift": 0.0,
+      "height": 300,
+      "path": "assets/processed/skater_lean_forward.png",
+      "width": 400
+    },
+    "skater_manual": {
+      "anchor": [
+        200,
+        292
+      ],
+      "boardSeparate": true,
+      "drawHeight": 80,
+      "drawWidth": 106.66666666666667,
+      "footLift": 0.0,
+      "height": 300,
+      "path": "assets/processed/skater_manual.png",
+      "width": 400
+    },
+    "skater_ollie": {
+      "anchor": [
+        200,
+        292
+      ],
+      "boardSeparate": true,
+      "drawHeight": 80,
+      "drawWidth": 106.66666666666667,
+      "footLift": 8.0,
+      "height": 300,
+      "path": "assets/processed/skater_ollie.png",
+      "width": 400
+    },
+    "skater_push1": {
+      "anchor": [
+        200,
+        292
+      ],
+      "boardSeparate": true,
+      "drawHeight": 80,
+      "drawWidth": 106.66666666666667,
+      "footLift": 0.0,
+      "height": 300,
+      "path": "assets/processed/skater_push1.png",
+      "width": 400
+    },
+    "skater_push2": {
+      "anchor": [
+        200,
+        292
+      ],
+      "boardSeparate": true,
+      "drawHeight": 80,
+      "drawWidth": 106.66666666666667,
+      "footLift": 0.0,
+      "height": 300,
+      "path": "assets/processed/skater_push2.png",
+      "width": 400
+    },
+    "skater_roll": {
+      "anchor": [
+        200,
+        292
+      ],
+      "boardSeparate": true,
+      "drawHeight": 80,
+      "drawWidth": 106.66666666666667,
+      "footLift": 0.0,
+      "height": 300,
+      "path": "assets/processed/skater_roll.png",
+      "width": 400
+    },
+    "stairs": {
+      "anchor": [
+        116.0,
+        131
+      ],
+      "drawHeight": 73.37931034482759,
+      "drawWidth": 128,
+      "height": 133,
+      "path": "assets/processed/stairs.png",
+      "width": 232
+    },
+    "streetlamp": {
+      "anchor": [
+        58.0,
+        254
+      ],
+      "drawHeight": 121.37931034482759,
+      "drawWidth": 55,
+      "height": 256,
+      "path": "assets/processed/streetlamp.png",
+      "width": 116
+    }
+  },
+  "provenance": {
+    "art": {
+      "alphaCutoff": 200,
+      "anchorUnits": "bitmap pixels",
+      "cropMap": "assets/crop-map.json",
+      "obstacles": {
+        "gapProcessing": "Nearest common depth; dark-earth crop fills void above recessed cutaway, no asphalt cap; eight-column repeat seam repair.",
+        "generatedOriginal": "assets/generated/01a0f082-e22d-77fa-b22c-4924da128f02/ig_0a9c42252473d64c016abf1670818487d0a113c6fe32d47de2.png",
+        "layout": "Four unequal non-overlapping regions; alpha >= 200 bounds; not a 2x2 grid.",
+        "source": "assets/source/obstacles-sheet.png",
+        "styleReference": "Original street-sheet; no reference pixels copied."
+      },
+      "origin": "Existing user-approved original generated side-on PNGs; no new generation.",
+      "processing": "scripts/prepare_assets.py",
+      "processorSha256": "8618b6ebf5ca62b5b6b46628e33a7da0ed07cfc8ad6022bcc8aade9346fc4d52",
+      "referenceAssetsIncluded": false,
+      "sourceSha256": {
+        "assets/source/city.png": "8ceb47addb40e82834a904649aa3ba17f077054e6ff84006017c739f3c90b3f6",
+        "assets/source/obstacles-sheet.png": "894b062c2e497936d6c5b396ea06a3959fc4cca3c936a71d25ca16f7d71df960",
+        "assets/source/skater-sheet.png": "571009c0a2346ce652e97802bb935a48cd7755ef21f016d4424edd729f3ca261",
+        "assets/source/street-sheet.png": "2b820cd0bf93051af80fcc1d2d07397a6ee01b1f5b6377dd1f06c31628fc8fd2"
+      },
+      "variants": {
+        "dave": "Local deterministic HSV palette of Jeff; teal helmet, coral hoodie; no generation."
+      },
+      "view": "side-on belt scroller"
+    },
+    "audio": {
+      "bars": 4,
+      "bpm": 90,
+      "composer": "scripts/compose_audio.py",
+      "events": "assets/audio/events.json",
+      "format": "mono signed 16-bit PCM WAV",
+      "origin": "Original score and procedural synthesis; no recordings or external media.",
+      "sampleRate": 22050,
+      "score": "assets/audio/score.json",
+      "scoreSha256": "6c3fe69fce7b115c1bee07c784330daff2b0c6f5147d0fd135cc8f5a415ce745",
+      "seed": 731942,
+      "speakerAudition": false,
+      "title": "Sidewalk Pocket"
+    }
+  }
+}

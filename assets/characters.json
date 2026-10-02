@@ -1,0 +1,40 @@
+{
+  "jeff": {
+    "id": "jeff",
+    "name": "Jeff",
+    "previewKey": "skater_roll",
+    "poses": {
+      "roll": "skater_roll",
+      "push1": "skater_push1",
+      "push2": "skater_push2",
+      "crouch": "skater_crouch",
+      "ollie": "skater_ollie",
+      "flip": "skater_flip",
+      "catch": "skater_catch",
+      "manual": "skater_manual",
+      "grind": "skater_grind",
+      "lean_forward": "skater_lean_forward",
+      "lean_back": "skater_lean_back",
+      "crash": "skater_crash"
+    }
+  },
+  "dave": {
+    "id": "dave",
+    "name": "Dave",
+    "previewKey": "dave_roll",
+    "poses": {
+      "roll": "dave_roll",
+      "push1": "dave_push1",
+      "push2": "dave_push2",
+      "crouch": "dave_crouch",
+      "ollie": "dave_ollie",
+      "flip": "dave_flip",
+      "catch": "dave_catch",
+      "manual": "dave_manual",
+      "grind": "dave_grind",
+      "lean_forward": "dave_lean_forward",
+      "lean_back": "dave_lean_back",
+      "crash": "dave_crash"
+    }
+  }
+}

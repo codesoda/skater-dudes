@@ -1,0 +1,14 @@
+/index.html
+/dist/
+/node_modules/
+/references/
+/graft/
+/tests/artifacts/
+/assets/qa/
+/.pi/
+/.aislop/*
+!/.aislop/config.yml
+__pycache__/
+*.pyc
+.venv/
+.DS_Store

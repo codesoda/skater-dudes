@@ -1,0 +1,15 @@
+ci:
+  failBelow: 95
+exclude:
+  - index.html
+  - dist/**
+  - node_modules/**
+  - references/**
+  - .pi/**
+  - .aislop/logs/**
+  - .aislop/history/**
+  - tests/artifacts/**
+  - assets/qa/**
+  - '**/__pycache__/**'
+  - '**/*.png'
+  - '**/*.wav'

@@ -1,0 +1,15 @@
+{
+  "name": "skater-dudes",
+  "version": "1.0.0",
+  "private": true,
+  "description": "An original offline fixed-lane belt-scrolling skate prototype",
+  "scripts": {
+    "build": "python3 scripts/build.py",
+    "test": "npm run build && python3 -m unittest discover -s tests -p 'test_*.py' && node --test --test-concurrency=1 tests/*.test.cjs",
+    "scan": "node scripts/scan.cjs"
+  },
+  "devDependencies": {
+    "playwright": "1.62.1",
+    "aislop": "0.16.1"
+  }
+}

@@ -1,0 +1,505 @@
+{
+  "version": 1,
+  "length": 25200,
+  "name": "THE NIGHT SHIFT",
+  "checkpoints": [
+    0,
+    1400,
+    2540,
+    5600,
+    6740,
+    8400,
+    9540,
+    16800,
+    21000,
+    22140
+  ],
+  "objects": [
+    {
+      "id": "crack-0",
+      "type": "crack",
+      "x": 800,
+      "width": 9,
+      "height": 0,
+      "laneY": 0,
+      "depth": 44
+    },
+    {
+      "id": "crack-1",
+      "type": "crack",
+      "x": 1620,
+      "width": 9,
+      "height": 0,
+      "laneY": 0,
+      "depth": 44
+    },
+    {
+      "id": "hazard-0",
+      "type": "curb",
+      "x": 1900,
+      "width": 28,
+      "height": 18,
+      "laneY": 0,
+      "depth": 44,
+      "charged": false
+    },
+    {
+      "id": "crack-2",
+      "type": "crack",
+      "x": 2440,
+      "width": 9,
+      "height": 0,
+      "laneY": 0,
+      "depth": 44
+    },
+    {
+      "id": "hazard-1",
+      "type": "cone",
+      "x": 2700,
+      "width": 24,
+      "height": 28,
+      "laneY": 0,
+      "depth": 44,
+      "charged": false
+    },
+    {
+      "id": "crack-3",
+      "type": "crack",
+      "x": 3260,
+      "width": 9,
+      "height": 0,
+      "laneY": 0,
+      "depth": 44
+    },
+    {
+      "id": "hazard-2",
+      "type": "curb",
+      "x": 3500,
+      "width": 42,
+      "height": 20,
+      "laneY": 0,
+      "depth": 44,
+      "charged": false
+    },
+    {
+      "id": "crack-4",
+      "type": "crack",
+      "x": 4080,
+      "width": 9,
+      "height": 0,
+      "laneY": 0,
+      "depth": 44
+    },
+    {
+      "id": "hazard-3",
+      "type": "stairs",
+      "x": 4220,
+      "width": 110,
+      "height": 60,
+      "laneY": 0,
+      "depth": 44,
+      "charged": true
+    },
+    {
+      "id": "crack-5",
+      "type": "crack",
+      "x": 4900,
+      "width": 9,
+      "height": 0,
+      "laneY": 0,
+      "depth": 44
+    },
+    {
+      "id": "hazard-4",
+      "type": "gap",
+      "x": 4940,
+      "width": 160,
+      "height": 0,
+      "laneY": 0,
+      "depth": 44,
+      "charged": true,
+      "popDistance": 84
+    },
+    {
+      "id": "added-5",
+      "type": "jersey_barrier",
+      "x": 5660,
+      "width": 160,
+      "height": 76,
+      "laneY": 0,
+      "depth": 44,
+      "charged": true
+    },
+    {
+      "id": "crack-6",
+      "type": "crack",
+      "x": 5720,
+      "width": 9,
+      "height": 0,
+      "laneY": 0,
+      "depth": 44
+    },
+    {
+      "id": "hazard-5",
+      "type": "rail",
+      "x": 6380,
+      "width": 190,
+      "height": 60,
+      "laneY": 0,
+      "depth": 44,
+      "charged": true
+    },
+    {
+      "id": "hazard-6",
+      "type": "cone",
+      "x": 7100,
+      "width": 24,
+      "height": 30,
+      "laneY": 0,
+      "depth": 44,
+      "charged": false
+    },
+    {
+      "id": "crack-8",
+      "type": "crack",
+      "x": 7360,
+      "width": 9,
+      "height": 0,
+      "laneY": 0,
+      "depth": 44
+    },
+    {
+      "id": "hazard-7",
+      "type": "bench",
+      "x": 7820,
+      "width": 82,
+      "height": 72,
+      "laneY": 0,
+      "depth": 44,
+      "charged": true
+    },
+    {
+      "id": "added-9",
+      "type": "low_bar",
+      "x": 8540,
+      "width": 100,
+      "height": 69.5,
+      "laneY": 0,
+      "depth": 44,
+      "charged": false,
+      "thickness": 8
+    },
+    {
+      "id": "hazard-8",
+      "type": "low_bar",
+      "x": 9260,
+      "width": 100,
+      "height": 69.5,
+      "laneY": 0,
+      "depth": 44,
+      "charged": false,
+      "thickness": 8
+    },
+    {
+      "id": "climb-1",
+      "type": "ledge",
+      "x": 9980,
+      "width": 3680,
+      "height": 60,
+      "laneY": 0,
+      "depth": 44,
+      "baseHeight": 0,
+      "charged": true,
+      "section": "four-tier",
+      "intent": "ride",
+      "hint": "RIDE LEDGE"
+    },
+    {
+      "id": "climb-2",
+      "type": "ledge",
+      "x": 10900,
+      "width": 2760,
+      "height": 120,
+      "laneY": 0,
+      "depth": 44,
+      "baseHeight": 60,
+      "charged": true,
+      "section": "four-tier",
+      "intent": "ride",
+      "hint": "UP NEXT STEP"
+    },
+    {
+      "id": "climb-3",
+      "type": "ledge",
+      "x": 11820,
+      "width": 1840,
+      "height": 180,
+      "laneY": 0,
+      "depth": 44,
+      "baseHeight": 120,
+      "charged": true,
+      "section": "four-tier",
+      "intent": "ride",
+      "hint": "UP NEXT STEP"
+    },
+    {
+      "id": "climb-4",
+      "type": "ledge",
+      "x": 12740,
+      "width": 920,
+      "height": 240,
+      "laneY": 0,
+      "depth": 44,
+      "baseHeight": 180,
+      "charged": true,
+      "section": "four-tier",
+      "intent": "ride",
+      "hint": "UP NEXT STEP"
+    },
+    {
+      "id": "climb-down",
+      "type": "stairs",
+      "x": 13660,
+      "width": 1320,
+      "height": 220,
+      "laneY": 0,
+      "depth": 44,
+      "steps": 11,
+      "direction": "down",
+      "section": "four-tier",
+      "hint": "STAIRS DOWN"
+    },
+    {
+      "id": "jersey-after-climb",
+      "type": "jersey_barrier",
+      "x": 15480,
+      "width": 160,
+      "height": 76,
+      "laneY": 0,
+      "depth": 44,
+      "charged": true
+    },
+    {
+      "id": "crack-18",
+      "type": "crack",
+      "x": 15560,
+      "width": 9,
+      "height": 0,
+      "laneY": 0,
+      "depth": 44
+    },
+    {
+      "id": "added-19",
+      "type": "low_bar",
+      "x": 15920,
+      "width": 100,
+      "height": 69.5,
+      "laneY": 0,
+      "depth": 44,
+      "charged": false,
+      "thickness": 8
+    },
+    {
+      "id": "hazard-16",
+      "type": "gap",
+      "x": 16460,
+      "width": 170,
+      "height": 0,
+      "laneY": 0,
+      "depth": 44,
+      "charged": true,
+      "popDistance": 84
+    },
+    {
+      "id": "transfer-ledge",
+      "type": "ledge",
+      "x": 17180,
+      "width": 1100,
+      "height": 60,
+      "laneY": 0,
+      "depth": 44,
+      "charged": true,
+      "intent": "ride",
+      "section": "transfer",
+      "hint": "RIDE LEDGE"
+    },
+    {
+      "id": "transfer-rail",
+      "type": "rail",
+      "x": 18420,
+      "width": 700,
+      "height": 60,
+      "laneY": 0,
+      "depth": 44,
+      "charged": true,
+      "intent": "grind",
+      "section": "transfer",
+      "hint": "UP TO GRIND",
+      "popDistance": 200
+    },
+    {
+      "id": "added-24",
+      "type": "jersey_barrier",
+      "x": 19600,
+      "width": 160,
+      "height": 76,
+      "laneY": 0,
+      "depth": 44,
+      "charged": true
+    },
+    {
+      "id": "crack-24",
+      "type": "crack",
+      "x": 20480,
+      "width": 9,
+      "height": 0,
+      "laneY": 0,
+      "depth": 44
+    },
+    {
+      "id": "hazard-21",
+      "type": "bench",
+      "x": 20780,
+      "width": 86,
+      "height": 76,
+      "laneY": 0,
+      "depth": 44,
+      "charged": true
+    },
+    {
+      "id": "crack-25",
+      "type": "crack",
+      "x": 21300,
+      "width": 9,
+      "height": 0,
+      "laneY": 0,
+      "depth": 44
+    },
+    {
+      "id": "hazard-22",
+      "type": "gap",
+      "x": 21500,
+      "width": 172,
+      "height": 0,
+      "laneY": 0,
+      "depth": 44,
+      "charged": true,
+      "popDistance": 84
+    },
+    {
+      "id": "crack-26",
+      "type": "crack",
+      "x": 22120,
+      "width": 9,
+      "height": 0,
+      "laneY": 0,
+      "depth": 44
+    },
+    {
+      "id": "hazard-23",
+      "type": "cone",
+      "x": 22220,
+      "width": 24,
+      "height": 30,
+      "laneY": 0,
+      "depth": 44,
+      "charged": false
+    },
+    {
+      "id": "duck-late",
+      "type": "low_bar",
+      "x": 22480,
+      "width": 100,
+      "height": 69.5,
+      "laneY": 0,
+      "depth": 44,
+      "thickness": 8,
+      "charged": false
+    },
+    {
+      "id": "added-29",
+      "type": "cone",
+      "x": 22940,
+      "width": 24,
+      "height": 30,
+      "laneY": 0,
+      "depth": 44,
+      "charged": false
+    },
+    {
+      "id": "crack-27",
+      "type": "crack",
+      "x": 22940,
+      "width": 9,
+      "height": 0,
+      "laneY": 0,
+      "depth": 44
+    },
+    {
+      "id": "hazard-24",
+      "type": "ledge",
+      "x": 23660,
+      "width": 180,
+      "height": 60,
+      "laneY": 0,
+      "depth": 44,
+      "charged": true
+    },
+    {
+      "id": "crack-28",
+      "type": "crack",
+      "x": 23760,
+      "width": 9,
+      "height": 0,
+      "laneY": 0,
+      "depth": 44
+    },
+    {
+      "id": "hazard-25",
+      "type": "curb",
+      "x": 24380,
+      "width": 38,
+      "height": 22,
+      "laneY": 0,
+      "depth": 44,
+      "charged": false
+    },
+    {
+      "id": "crack-29",
+      "type": "crack",
+      "x": 24580,
+      "width": 9,
+      "height": 0,
+      "laneY": 0,
+      "depth": 44
+    }
+  ],
+  "practiceObjects": [
+    {
+      "id": "practice-curb",
+      "type": "curb",
+      "x": 1800,
+      "width": 30,
+      "height": 18,
+      "laneY": 0,
+      "depth": 38,
+      "charged": false
+    },
+    {
+      "id": "practice-rail",
+      "type": "rail",
+      "x": 3300,
+      "width": 180,
+      "height": 58,
+      "laneY": 0,
+      "depth": 32,
+      "charged": true
+    }
+  ],
+  "practiceCheckpoints": [
+    0,
+    1400,
+    2800,
+    4200
+  ]
+}

@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#161b29">
+<title>Skater Dudes</title>
+<style>{{STYLE}}</style>
+</head>
+<body>
+<header class="site-header">
+  <div><span class="wordmark">SKATER DUDES</span><span class="edition">THE NIGHT SHIFT / V.01</span></div>
+  <nav class="toolbar" aria-label="Game controls">
+    <button id="pause-button" type="button">Pause / P</button>
+    <button id="help-button" type="button">Controls / I</button>
+    <button id="mute-button" type="button">Sound on / M</button>
+  </nav>
+</header>
+<main>
+  <div id="stage" class="stage">
+    <canvas id="game" width="960" height="540" tabindex="0" aria-label="Skater Dudes side-on skate game. Space for ollies; Down then Up for kickflips; Hold Right to build speed on street; Left and Right balance only in tricks; hold Down to duck. Press I for full controls.">Skater Dudes needs a browser with Canvas support.</canvas>
+  </div>
+  <div class="under-stage"><strong id="game-status" role="status">Loading Skater Dudes…</strong><span class="keyline">SPACE ollie &nbsp; ↓ ↑ kickflip &nbsp; → speed / trick balance &nbsp; ↓ duck &nbsp; P pause &nbsp; R restart</span><span>KEEP IT ROLLING ↗</span></div>
+</main>
+<footer><span>ORIGINAL ART + SOUND · LOCAL / OFFLINE · KEYBOARD PLAY</span><span id="audio-status" role="status"></span></footer>
+<script>{{GAME_DATA}}</script>
+<script>{{CORE_JS}}</script>
+<script>{{INPUT_JS}}</script>
+<script>{{UI_JS}}</script>
+<script>{{AUDIO_JS}}</script>
+<script>{{RENDERER_JS}}</script>
+<script>{{MAIN_JS}}</script>
+</body>
+</html>

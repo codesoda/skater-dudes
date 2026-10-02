@@ -1,0 +1,338 @@
+[
+  {
+    "gain": 0.198,
+    "instrument": "bass",
+    "note": 40,
+    "time": 0.0
+  },
+  {
+    "gain": 0.1716,
+    "instrument": "bass",
+    "note": 40,
+    "time": 1.688667
+  },
+  {
+    "gain": 0.3496,
+    "instrument": "kick",
+    "note": null,
+    "time": 0.0
+  },
+  {
+    "gain": 0.2926,
+    "instrument": "kick",
+    "note": null,
+    "time": 1.688667
+  },
+  {
+    "gain": 0.24,
+    "instrument": "snare",
+    "note": null,
+    "time": 0.666667
+  },
+  {
+    "gain": 0.24,
+    "instrument": "snare",
+    "note": null,
+    "time": 2.0
+  },
+  {
+    "gain": 0.04095,
+    "instrument": "hat",
+    "note": null,
+    "time": 0.0
+  },
+  {
+    "gain": 0.0306,
+    "instrument": "hat",
+    "note": null,
+    "time": 0.355333
+  },
+  {
+    "gain": 0.04095,
+    "instrument": "hat",
+    "note": null,
+    "time": 0.666667
+  },
+  {
+    "gain": 0.0306,
+    "instrument": "hat",
+    "note": null,
+    "time": 1.022
+  },
+  {
+    "gain": 0.04095,
+    "instrument": "hat",
+    "note": null,
+    "time": 1.333333
+  },
+  {
+    "gain": 0.0306,
+    "instrument": "hat",
+    "note": null,
+    "time": 1.688667
+  },
+  {
+    "gain": 0.04095,
+    "instrument": "hat",
+    "note": null,
+    "time": 2.0
+  },
+  {
+    "gain": 0.0306,
+    "instrument": "hat",
+    "note": null,
+    "time": 2.355333
+  },
+  {
+    "gain": 0.198,
+    "instrument": "bass",
+    "note": 40,
+    "time": 2.666667
+  },
+  {
+    "gain": 0.1716,
+    "instrument": "bass",
+    "note": 40,
+    "time": 4.355333
+  },
+  {
+    "gain": 0.3496,
+    "instrument": "kick",
+    "note": null,
+    "time": 2.666667
+  },
+  {
+    "gain": 0.2926,
+    "instrument": "kick",
+    "note": null,
+    "time": 4.355333
+  },
+  {
+    "gain": 0.24,
+    "instrument": "snare",
+    "note": null,
+    "time": 3.333333
+  },
+  {
+    "gain": 0.24,
+    "instrument": "snare",
+    "note": null,
+    "time": 4.666667
+  },
+  {
+    "gain": 0.04095,
+    "instrument": "hat",
+    "note": null,
+    "time": 2.666667
+  },
+  {
+    "gain": 0.0306,
+    "instrument": "hat",
+    "note": null,
+    "time": 3.022
+  },
+  {
+    "gain": 0.04095,
+    "instrument": "hat",
+    "note": null,
+    "time": 3.333333
+  },
+  {
+    "gain": 0.0306,
+    "instrument": "hat",
+    "note": null,
+    "time": 3.688667
+  },
+  {
+    "gain": 0.04095,
+    "instrument": "hat",
+    "note": null,
+    "time": 4.0
+  },
+  {
+    "gain": 0.0306,
+    "instrument": "hat",
+    "note": null,
+    "time": 4.355333
+  },
+  {
+    "gain": 0.04095,
+    "instrument": "hat",
+    "note": null,
+    "time": 4.666667
+  },
+  {
+    "gain": 0.0306,
+    "instrument": "hat",
+    "note": null,
+    "time": 5.022
+  },
+  {
+    "gain": 0.198,
+    "instrument": "bass",
+    "note": 40,
+    "time": 5.333333
+  },
+  {
+    "gain": 0.1716,
+    "instrument": "bass",
+    "note": 40,
+    "time": 7.022
+  },
+  {
+    "gain": 0.3496,
+    "instrument": "kick",
+    "note": null,
+    "time": 5.333333
+  },
+  {
+    "gain": 0.2926,
+    "instrument": "kick",
+    "note": null,
+    "time": 7.022
+  },
+  {
+    "gain": 0.24,
+    "instrument": "snare",
+    "note": null,
+    "time": 6.0
+  },
+  {
+    "gain": 0.24,
+    "instrument": "snare",
+    "note": null,
+    "time": 7.333333
+  },
+  {
+    "gain": 0.04095,
+    "instrument": "hat",
+    "note": null,
+    "time": 5.333333
+  },
+  {
+    "gain": 0.0306,
+    "instrument": "hat",
+    "note": null,
+    "time": 5.688667
+  },
+  {
+    "gain": 0.04095,
+    "instrument": "hat",
+    "note": null,
+    "time": 6.0
+  },
+  {
+    "gain": 0.0306,
+    "instrument": "hat",
+    "note": null,
+    "time": 6.355333
+  },
+  {
+    "gain": 0.04095,
+    "instrument": "hat",
+    "note": null,
+    "time": 6.666667
+  },
+  {
+    "gain": 0.0306,
+    "instrument": "hat",
+    "note": null,
+    "time": 7.022
+  },
+  {
+    "gain": 0.04095,
+    "instrument": "hat",
+    "note": null,
+    "time": 7.333333
+  },
+  {
+    "gain": 0.0306,
+    "instrument": "hat",
+    "note": null,
+    "time": 7.688667
+  },
+  {
+    "gain": 0.198,
+    "instrument": "bass",
+    "note": 40,
+    "time": 8.0
+  },
+  {
+    "gain": 0.1716,
+    "instrument": "bass",
+    "note": 40,
+    "time": 9.688667
+  },
+  {
+    "gain": 0.3496,
+    "instrument": "kick",
+    "note": null,
+    "time": 8.0
+  },
+  {
+    "gain": 0.2926,
+    "instrument": "kick",
+    "note": null,
+    "time": 9.688667
+  },
+  {
+    "gain": 0.24,
+    "instrument": "snare",
+    "note": null,
+    "time": 8.666667
+  },
+  {
+    "gain": 0.24,
+    "instrument": "snare",
+    "note": null,
+    "time": 10.0
+  },
+  {
+    "gain": 0.04095,
+    "instrument": "hat",
+    "note": null,
+    "time": 8.0
+  },
+  {
+    "gain": 0.0306,
+    "instrument": "hat",
+    "note": null,
+    "time": 8.355333
+  },
+  {
+    "gain": 0.04095,
+    "instrument": "hat",
+    "note": null,
+    "time": 8.666667
+  },
+  {
+    "gain": 0.0306,
+    "instrument": "hat",
+    "note": null,
+    "time": 9.022
+  },
+  {
+    "gain": 0.04095,
+    "instrument": "hat",
+    "note": null,
+    "time": 9.333333
+  },
+  {
+    "gain": 0.0306,
+    "instrument": "hat",
+    "note": null,
+    "time": 9.688667
+  },
+  {
+    "gain": 0.04095,
+    "instrument": "hat",
+    "note": null,
+    "time": 10.0
+  },
+  {
+    "gain": 0.0306,
+    "instrument": "hat",
+    "note": null,
+    "time": 10.355333
+  }
+]
