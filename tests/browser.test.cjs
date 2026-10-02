@@ -7,6 +7,8 @@ const { pathToFileURL } = require('node:url');
 const { chromium } = require('playwright');
 const { lightJumpPhase } = require('./route-light-jump.js');
 const { routeTarget } = require('./route-target.js');
+const { shouldLoadCharge } = require('./route-charged-jump.js');
+const settings = require('../settings.json');
 const ROOT = path.resolve(__dirname, '..');
 const OUT = path.join(__dirname, 'artifacts');
 const URL = pathToFileURL(path.join(ROOT, 'index.html')).href;
@@ -18,7 +20,9 @@ async function observe(page) {
     const qa = window.qa = { keys: [], appliedKeys: [], frames: [], events: [], starts: [], poses: [], meters: [] };
     const applyKey = game.key.bind(game);
     game.key = (key, down) => {
-      qa.appliedKeys.push({ key, down, time: game.time, speed: game.currentSpeed });
+      qa.appliedKeys.push({ key, down, time: game.time, speed: game.currentSpeed,
+        x: game.worldX, z: game.jumpZ, mode: game.mode, surface: game.surface,
+        charge: game.charge, spaceAt: game.space?.at });
       return applyKey(key, down);
     };
     for (const type of ['keydown', 'keyup']) window.addEventListener(type, e => {
@@ -53,13 +57,42 @@ async function observe(page) {
 async function state(page) {
   return page.evaluate(() => {
     const g = window.SHREDDER.game;
-    return { speed: g.currentSpeed, time: g.time, x: g.worldX, z: g.jumpZ, lane: g.laneY, velocity: g.velocityZ, mode: g.mode,
+    const support = g.surface && g.objects.flatMap(o => g.solidParts(o)).find(o => o.id === g.surface);
+    return { supportEnd: support ? support.x + support.width + g.cfg.boardHalfWidth : null,
+      speed: g.currentSpeed, time: g.time, x: g.worldX, z: g.jumpZ, lane: g.laneY, velocity: g.velocityZ, mode: g.mode,
       surface: g.surface, status: g.status, charge: g.charge, gauge: g.chargeVisible, flip: g.flip,
       balance: g.balance, balanceActive: g.balanceActive, bails: g.bails, score: g.score,
       combo: g.combo, bestCombo: g.bestCombo, checkpoint: g.checkpoint, message: g.message, character: g.characterId };
   });
 }
 async function shot(page, name) { await page.screenshot({ path: path.join(OUT, name + '.png') }); }
+async function routeEvidence(page, name, run) {
+  const captures = [];
+  // Start actual runtime screenshots here, but never wait for their roundtrips
+  // between input decisions. Attach rejection handlers now and check after play.
+  const capture = label => captures.push(shot(page, label).then(() => null, error => error));
+  try {
+    await run(capture);
+    for (const error of await Promise.all(captures)) if (error) throw error;
+  } catch (error) {
+    const evidence = { error: error.stack };
+    try {
+      evidence.state = await state(page);
+      evidence.history = await page.evaluate(() => ({
+        frames: window.qa.frames.slice(-600), events: window.qa.events.slice(-256),
+        keys: window.qa.keys.slice(-256), appliedKeys: window.qa.appliedKeys.slice(-256)
+      }));
+    } catch (observationError) { evidence.observationError = observationError.message; }
+    const directory = path.join(OUT, 'ci-browser');
+    fs.mkdirSync(directory, { recursive: true });
+    fs.writeFileSync(path.join(directory, name + '.json'), JSON.stringify(evidence, null, 2));
+    // A failed hold must not turn the next fixture's trusted down into a repeat.
+    for (const code of ['Space', 'ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight']) await page.keyboard.up(code);
+    throw error;
+  } finally {
+    await Promise.all(captures);
+  }
+}
 async function tap(page, key = 'Space', ms = 45) { await page.keyboard.down(key); await wait(ms); await page.keyboard.up(key); }
 async function restart(page) { await tap(page, 'KeyR', 5); await wait(40); }
 async function until(page, predicate, timeout = 2000) {
@@ -266,7 +299,7 @@ test('offline Chrome: trusted controls, rendering, audio, responsiveness and com
     fs.writeFileSync(path.join(OUT, 'performance.json'), JSON.stringify(perf, null, 2));
     assert.ok(wall >= 1.9); assert.ok(Math.abs(sim - wall) < .1); assert.ok(perf.medianFrameMs < 25, JSON.stringify(perf));
   });
-  await t.test('full route: trusted browser keys, all hazards, rail and ledge catches, no teleports, proper finish', { timeout: 105000 }, async () => {
+  await t.test('full route: trusted browser keys, all hazards, rail and ledge catches, no teleports, proper finish', { timeout: 105000 }, async () => routeEvidence(page, 'full-route', async capture => {
     await tap(page, 'KeyP', 5); await page.getByRole('button', { name: 'Ride the route', exact: true }).click();
     const objects = await page.evaluate(() => window.SHREDDER.game.objects);
     const startEvent = await page.evaluate(() => window.qa.events.length);
@@ -292,7 +325,7 @@ test('offline Chrome: trusted controls, rendering, audio, responsiveness and com
       if (s.time < 12) speedSamples.push({ x: s.x, time: s.time, speed: s.speed, mode: s.mode });
       await key('ArrowDown', o?.type === 'low_bar' && distance < 150);
       if (o && o.type !== 'low_bar' && ['rolling', 'manual'].includes(s.mode)) {
-        if (o.charged && !phase && distance <= (o.popDistance || 110) + s.speed * 1.1) { await key('Space', true); phase = 'loading'; }
+        if (!phase && shouldLoadCharge(o, s, settings)) { await key('Space', true); phase = 'loading'; }
         if (phase === 'loading' && distance <= (o.popDistance || 110) + 12) {
           assert.equal(s.charge, 1); await key('Space', false); phase = 'jumped';
         }
@@ -314,19 +347,19 @@ test('offline Chrome: trusted controls, rendering, audio, responsiveness and com
       for (const obj of objects) if (s.x > obj.x + obj.width + 22) crossed.add(obj.id);
       if (s.mode === 'grind' && !railShot) {
         assert.equal(await page.evaluate(() => window.SHREDDER.audio.loops.has('grind')), true);
-        await shot(page, 'railgrind'); railShot = true;
+        capture('railgrind'); railShot = true;
       }
       if (s.mode === 'rolling' && s.surface) ridden.add(s.surface);
       const elevated = s.mode === 'rolling' && s.surface === 'transfer-ledge' && s.x > 17600 ? 'rideledge' :
         s.mode === 'rolling' && s.surface === 'climb-3' && s.x > 12300 ? 'fourtier' :
         s.surface?.startsWith('climb-down:') ? 'stairs' : s.mode === 'grind' && s.surface === 'transfer-rail' ? 'lockedrail' : null;
       if (elevated && !elevatedShots.has(elevated)) {
-        await shot(page, 'elevated-lines-grinds/' + elevated); elevatedShots.add(elevated);
+        capture('elevated-lines-grinds/' + elevated); elevatedShots.add(elevated);
       }
       const art = o?.type;
       if (!screenshots.has(art) && ((['jersey_barrier', 'gap'].includes(art) && distance > 200 && distance < 320) ||
           (art === 'low_bar' && s.x > o.x + 30 && s.x < o.x + o.width - 20))) {
-        await shot(page, 'speed-obstacles-audio/' + art); screenshots.add(art);
+        capture('speed-obstacles-audio/' + art); screenshots.add(art);
       }
       await wait(12);
     }
@@ -397,7 +430,7 @@ test('offline Chrome: trusted controls, rendering, audio, responsiveness and com
     assert.ok(routeFrames.filter(f => f.mode === 'air' || f.mode === 'rolling').every(f => !f.loops.includes('grind')));
     await shot(page, 'finish');
     fs.writeFileSync(path.join(OUT, 'route.json'), JSON.stringify({ ...s, meaningfulHazards: objects.filter(o => o.type !== 'crack').length, duckBars: objects.filter(o => o.type === 'low_bar').length, boostedOpening: true, wallSeconds: (Date.now() - wallStart) / 1000, crossed: crossed.size, events, controller: 'Playwright trusted keyboard; read-only state feedback; normal clock; no teleport or game-state mutation' }, null, 2));
-  });
+  }));
   await t.test('real decoded concrete bitmap tiles the full shelf without stretching', async () => {
     const evidence = await page.evaluate(() => {
       // Explicit offscreen renderer fixture, not a route or player-state fixture.
@@ -434,12 +467,29 @@ test('offline Chrome: trusted controls, rendering, audio, responsiveness and com
     assert.ok(recovered.x >= 0 && recovered.x < 30); assert.equal(recovered.z, 0);
     await tap(page, 'KeyP', 5);
   });
-  await t.test('Dave clears the curb, hits the next cone and retries just past the curb with preparation time', async () => {
+  await t.test('Dave clears the curb, hits the next cone and retries just past the curb with preparation time', async () => routeEvidence(page, 'dave-curb-retry', async () => {
     await page.getByRole('button', { name: 'Choose dude', exact: true }).click();
     await page.getByRole('radio', { name: 'Dave', exact: true }).check();
     await page.getByRole('button', { name: 'Ride the street', exact: false }).click();
     const startEvent = await page.evaluate(() => window.qa.events.length);
-    await until(page, s => s.x >= 1832, 8000); await tap(page, 'Space', 25);
+    const startKey = await page.evaluate(() => window.qa.keys.length);
+    const curb = await page.evaluate(() => window.SHREDDER.game.objects.find(o => o.id === 'hazard-0'));
+    let phase = '';
+    for (const next of ['light-ready', 'jumped']) {
+      const s = await until(page, s => ['rolling', 'manual'].includes(s.mode) &&
+        lightJumpPhase(phase, curb.x - s.x, s.speed) === next, 8000);
+      assert.equal(s.bails, 0); assert.equal(s.charge, 0); assert.equal(s.gauge, false);
+      if (next === 'light-ready') await page.keyboard.down('Space');
+      else await page.keyboard.up('Space');
+      phase = next;
+    }
+    const spaceKeys = await page.evaluate(i => window.qa.keys.slice(i).filter(k => k.code === 'Space'), startKey);
+    assert.equal(spaceKeys.length, 2);
+    const [down, up] = spaceKeys;
+    assert.equal(down.type, 'keydown'); assert.equal(up.type, 'keyup');
+    assert.ok(down.trusted && up.trusted && !down.repeat && !up.repeat);
+    assert.ok(up.at - down.at > 0 && up.at - down.at < settings.tapThreshold * 1000,
+      `Dave curb light hold: ${up.at - down.at} ms`);
     await until(page, s => s.x > 2200, 2500);
     const banked = await state(page); assert.equal(banked.bails, 0); assert.ok(banked.score > 0);
     await until(page, s => s.x >= 2580, 2500); await page.keyboard.down('ArrowUp');
@@ -461,11 +511,12 @@ test('offline Chrome: trusted controls, rendering, audio, responsiveness and com
     fs.mkdirSync(path.join(OUT, 'playtest-tuning'), { recursive: true });
     fs.writeFileSync(path.join(OUT, 'playtest-tuning/retry.json'), JSON.stringify({
       character: 'dave', cleared: 'hazard-0', failed: 'hazard-1', retryX: retry.x, approachSeconds,
+      lightHoldMs: up.at - down.at, spaceKeys,
       measuredSecondsToNextCollision: collisions[1].time - retry.time, bankedScore: banked.score,
       controller: 'Trusted keyboard from route start; real curb ollie and cone collisions; no position fixtures'
     }, null, 2));
     await tap(page, 'KeyP', 5);
-  });
+  }));
   await t.test('responsive title and accessible practice at mobile, tablet and desktop sizes', async () => {
     for (const [width, height] of [[390, 844], [768, 1024], [1440, 900]]) {
       const responsive = await context.newPage(); await responsive.setViewportSize({ width, height }); await responsive.goto(URL);

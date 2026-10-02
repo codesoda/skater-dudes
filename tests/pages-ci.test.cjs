@@ -22,13 +22,18 @@ test('Pages checks install locked tools and prepare ignored QA before the full s
 
 test('Pages actions are SHA pinned and failures keep quality evidence without bypasses', () => {
   const actions = [...workflow.matchAll(/uses: (\S+)/g)].map(match => match[1]);
-  assert.equal(actions.length, 7);
+  assert.equal(actions.length, 8);
   for (const action of actions) assert.match(action, /^actions\/[a-z-]+@[a-f0-9]{40}$/);
   assert.doesNotMatch(workflow, /continue-on-error|\|\| true/);
   assert.match(checks, /if: \$\{\{ !cancelled\(\) && steps\.install\.outcome == 'success' \}\}\n        run: npm run scan/);
   assert.match(checks, /if: \$\{\{ !cancelled\(\) && steps\.scan\.outcome != 'skipped' \}\}\n        uses: actions\/upload-artifact@/);
   assert.match(checks, /path: tests\/artifacts\/quality\//);
   assert.match(checks, /if-no-files-found: error/);
+});
+
+test('Pages retains bounded browser failure history without changing test or deploy gates', () => {
+  assert.match(checks, /name: Save browser failure history\n        if: \$\{\{ failure\(\) \}\}\n        uses: actions\/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a/);
+  assert.match(checks, /name: ci-browser-failure\n          path: tests\/artifacts\/ci-browser\/\n          if-no-files-found: warn\n          retention-days: 14/);
 });
 
 test('Pages deploys only checked main artifacts with isolated write permissions', () => {
