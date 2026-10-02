@@ -59,7 +59,9 @@ async function cdpTouch(context, page) {
     async second() { await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ ...current, id: 1 }, { x: current.x + 30, y: current.y, id: 2 }] }); },
     async swipe(p, dx, dy) {
       await this.start(p);
-      for (let n = 1; n <= 4; n++) { await wait(17); await this.move({ x: p.x + dx * n / 4, y: p.y + dy * n / 4 }); }
+      // ZingTouch needs >2 native moves and measures the final pair's velocity.
+      // Leave most of the displacement for that pair, not a latency-sensitive 10px.
+      for (const fraction of [.1, .25, 1]) { await wait(17); await this.move({ x: p.x + dx * fraction, y: p.y + dy * fraction }); }
       await this.end();
     }
   };
@@ -122,6 +124,86 @@ test('Chromium phone: trusted normal-clock gestures and real street hazards, no 
     await wait(650); assert.equal((await state(page)).charge, 1); assert.equal((await state(page)).mode, 'rolling');
     await screenshot(page, 'chromium-full-charge'); await touch.end();
     await until(page, s => s.mode === 'air'); assert.equal(await page.evaluate(() => window.SHREDDER.game.popCharge), 1);
+  });
+  await t.test('trusted Chromium Swipe emits real velocity and carries a bounded catch pulse across release', async () => {
+    await restart(page);
+    const p = await point(page, .5, .85), box = await page.locator('#game').boundingBox();
+    await touch.start(p); await wait(1050); await touch.end(); await until(page, s => s.mode === 'air');
+    await page.evaluate(() => {
+      const { gestures, game } = window.SHREDDER, canvas = document.getElementById('game');
+      const qa = window.swipeQA = { native: [], emitted: [], callbacks: [], frames: [] };
+      const snapshot = () => ({ at: performance.now(), time: game.time, mode: game.mode,
+        up: game.keys.Up, contact: !!gestures.contact, catchUntil: gestures.catchUntil,
+        owners: [...(gestures.input.owners.get('ArrowUp') || [])] });
+      const native = e => qa.native.push({ type: e.type, trusted: e.isTrusted,
+        at: performance.now(), date: Date.now(), x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY });
+      for (const type of ['touchstart', 'touchmove', 'touchend']) window.addEventListener(type, native, true);
+      // Observe the library's actual CustomEvent before its handlers consume it.
+      // Native trust belongs to the input events, not the emitted CustomEvent.
+      const dispatch = canvas.dispatchEvent;
+      canvas.dispatchEvent = function (event) {
+        if (event.detail?.data?.[0]?.velocity !== undefined) {
+          qa.emitted.push({ type: event.type, data: event.detail.data, ...snapshot() });
+        }
+        return dispatch.call(this, event);
+      };
+      const originals = { swipe: gestures.swipe, end: gestures.end };
+      for (const name of Object.keys(originals)) gestures[name] = function (...args) {
+        const before = snapshot(), result = originals[name].apply(this, args);
+        qa.callbacks.push({ name, before, after: snapshot() }); return result;
+      };
+      let frame;
+      const sample = () => { if (qa.frames.length < 180) qa.frames.push(snapshot()); frame = requestAnimationFrame(sample); };
+      frame = requestAnimationFrame(sample);
+      window.stopSwipeQA = () => {
+        cancelAnimationFrame(frame); canvas.dispatchEvent = dispatch;
+        Object.assign(gestures, originals);
+        for (const type of ['touchstart', 'touchmove', 'touchend']) window.removeEventListener(type, native, true);
+      };
+    });
+    let failure;
+    try {
+      // The 70%-height stroke stays inside the portrait canvas. Its final 75%
+      // segment is ~100 CSS px, leaving headroom for real CDP/frame latency.
+      await touch.swipe(p, 0, -box.height * .7);
+      // Wait for browser-side history, not a transport-delayed Up snapshot.
+      await page.waitForFunction(() => {
+        const qa = window.swipeQA, end = qa.callbacks.find(e => e.name === 'end');
+        return end && qa.frames.some(f => f.time >= end.after.catchUntil && !f.up && f.catchUntil === null);
+      }, null, { timeout: 2000 });
+      const qa = await page.evaluate(() => window.swipeQA);
+      const moves = qa.native.filter(e => e.type === 'touchmove');
+      assert.ok(qa.native.every(e => e.trusted)); assert.equal(moves.length, 3);
+      assert.ok(moves[1].y - moves[2].y > 70);
+      for (const e of qa.native) assert.ok(e.x >= box.x && e.x <= box.x + box.width && e.y >= box.y && e.y <= box.y + box.height);
+      assert.equal(qa.emitted.length, 1);
+      const emitted = qa.emitted[0], data = emitted.data[0];
+      assert.ok(data.velocity >= .2); assert.ok(data.duration > 0);
+      assert.ok(Math.abs(data.velocity - data.distance / data.duration) < .000001);
+      assert.ok(data.currentDirection > 45 && data.currentDirection < 135);
+      assert.equal(emitted.mode, 'air'); assert.equal(emitted.contact, true);
+      const swipe = qa.callbacks.find(e => e.name === 'swipe'), end = qa.callbacks.find(e => e.name === 'end');
+      assert.ok(swipe.after.owners.includes('touch-catch'));
+      assert.equal(end.before.contact, true); assert.equal(end.after.contact, false);
+      assert.deepEqual(end.after.owners, ['touch-catch']);
+      assert.ok(Math.abs(end.after.catchUntil - swipe.after.time - .35) < .000001);
+      const held = qa.frames.filter(f => !f.contact && f.up && f.time >= end.after.time);
+      assert.ok(held.length > 0, 'Catch must remain active after native release');
+      const expired = qa.frames.find(f => f.time >= end.after.catchUntil && !f.up && f.catchUntil === null);
+      assert.ok(expired, 'Catch must expire on the real simulation clock');
+      assert.equal(expired.mode, 'air');
+      // rAF may observe eight fixed catch-up steps plus the expiry boundary.
+      assert.ok(expired.time - end.after.catchUntil <= 9 / 60);
+      assert.equal((await state(page)).bails, 0);
+    } catch (error) { failure = error; throw error; }
+    finally {
+      const evidence = await page.evaluate(() => { window.stopSwipeQA(); return window.swipeQA; });
+      fs.writeFileSync(path.join(OUT, 'trusted-swipe.json'), JSON.stringify({ engine: browser.version(), error: failure?.stack, ...evidence }, null, 2));
+      if (failure) {
+        const directory = path.join(__dirname, 'artifacts/ci-browser'); fs.mkdirSync(directory, { recursive: true });
+        fs.writeFileSync(path.join(directory, 'trusted-swipe.json'), JSON.stringify({ error: failure.stack, ...evidence }, null, 2));
+      }
+    }
   });
   await t.test('drag down cancels pending charge, crouches immediately, and never jumps on release', async () => {
     await restart(page); const p = await point(page), before = (await state(page)).ollies;

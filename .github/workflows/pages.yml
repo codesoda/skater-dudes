@@ -29,10 +29,8 @@ jobs:
         run: npm ci
       - name: Install pinned art test dependency
         run: python3 -m pip install -r assets/requirements-build.txt
-      - name: Install Chromium
-        run: npx --no-install playwright install chromium --with-deps
-      - name: Install WebKit
-        run: npx --no-install playwright install webkit --with-deps
+      - name: Install Chromium and WebKit
+        run: npx --no-install playwright install chromium webkit --with-deps
       - name: Prepare offline art and ignored QA fixtures
         run: python3 scripts/prepare_assets.py
       - name: Build and test the standalone artifact

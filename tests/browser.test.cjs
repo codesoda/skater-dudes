@@ -558,7 +558,7 @@ test('offline Chrome: trusted controls, rendering, audio, responsiveness and com
     await broken.evaluate(() => { window.breakArt = false; });
     await broken.getByRole('button', { name: 'Retry artwork', exact: true }).click();
     await broken.getByRole('button', { name: 'Practice first', exact: true }).click();
-    await tap(broken); await wait(50); assert.equal((await state(broken)).mode, 'air'); await broken.close();
+    await tap(broken); await until(broken, s => s.mode === 'air'); await broken.close();
   });
   await t.test('no runtime errors or network attempts; gameplay keys are trusted', async () => {
     assert.deepEqual(errors, []); assert.deepEqual(network, []);
