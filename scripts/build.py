@@ -7,7 +7,7 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPTS = ("core", "input", "ui", "audio", "renderer", "main")
+SCRIPTS = ("core", "input", "gestures", "ui", "audio", "renderer", "main")
 
 
 def read_json(path):
@@ -71,6 +71,8 @@ def assemble(root=ROOT):
     serialized = json.dumps(data, separators=(",", ":"), ensure_ascii=True).replace("<", "\\u003c")
     replacements = {"GAME_DATA": "window.SHREDDER_DATA = " + serialized + ";",
                     "STYLE": (root / "web/style.css").read_text(encoding="utf-8")}
+    vendor = root / "vendor/zingtouch"
+    replacements["ZINGTOUCH_JS"] = "/*\n" + (vendor / "LICENSE").read_text(encoding="utf-8") + "\n*/\n" + (vendor / "zingtouch.min.js").read_text(encoding="utf-8")
     for name in SCRIPTS:
         source = (root / "web" / (name + ".js")).read_text(encoding="utf-8")
         if re.search(r"</script", source, re.IGNORECASE):

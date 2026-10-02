@@ -126,6 +126,18 @@ class ExportTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'Invalid character definition'):
                 BUILD.prepare(root)
 
+    def test_complete_standalone_build_uses_only_its_local_vendor_and_assets(self):
+        with tempfile.TemporaryDirectory(prefix='skater-dudes-offline-') as tmp:
+            root = Path(tmp)
+            for folder in ('assets', 'web', 'vendor'):
+                shutil.copytree(ROOT / folder, root / folder)
+            for name in ('settings.json', 'course.json'):
+                shutil.copyfile(ROOT / name, root / name)
+            self.assertEqual(BUILD.assemble(root), self.html)
+            (root / 'vendor/zingtouch/zingtouch.min.js').unlink()
+            with self.assertRaises(FileNotFoundError):
+                BUILD.assemble(root)
+
     def test_production_path_validation(self):
         for bad in ("references/paperboy/example.png", "assets/processed/../../references/example.png"):
             with self.assertRaises(ValueError):

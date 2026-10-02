@@ -1,0 +1,19 @@
+ZingTouch 1.0.6 — MIT License — Copyright (c) 2017 ZingChart
+https://zingchart.github.io/zingtouch/
+
+zingtouch.min.js is the VERBATIM dist/zingtouch.min.js from the pinned npm
+package. LICENSE is its verbatim MIT license. provenance.json records the
+verified npm tarball SHA-512 integrity and both vendored file SHA-256 hashes.
+The lockfile pins the same package; integrity tests compare the installed
+npm distribution against these files. No runtime CDN or network is used.
+
+The official bundle retains its sourceMappingURL comment. No map is shipped:
+normal gameplay makes no request; devtools may look for the optional debug map.
+Only this unmodified third-party vendor directory is excluded from AISLOP.
+All authored integration, build, input, core and tests remain in scan scope.
+
+1.0.6 uses TouchEvent in browsers with both touch and pointer APIs. Its Region
+has no native cancel hook. web/gestures.js adds scoped cancellation and clears
+Region.state.resetInputs() without changing this bundle. It registers built-in
+Tap, Pan, Swipe plus a custom Gesture for stationary hold start/end. Pinch,
+rotation and additional contacts do not control the game.

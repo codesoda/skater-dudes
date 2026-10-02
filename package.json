@@ -9,7 +9,10 @@
     "scan": "node scripts/scan.cjs"
   },
   "devDependencies": {
-    "playwright": "1.62.1",
-    "aislop": "0.16.1"
+    "aislop": "0.16.1",
+    "playwright": "1.62.1"
+  },
+  "dependencies": {
+    "zingtouch": "1.0.6"
   }
 }

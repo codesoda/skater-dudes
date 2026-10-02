@@ -4,6 +4,8 @@ exclude:
   - index.html
   - dist/**
   - node_modules/**
+  # Unmodified, hash-checked MIT distribution; authored integration stays in scope.
+  - vendor/zingtouch/**
   - references/**
   - .pi/**
   - .aislop/logs/**

@@ -7,6 +7,13 @@
   class UI {
     constructor(host, action, data) {
       this.data = data; this.choices = [];
+      this.touch = root.matchMedia('(pointer: coarse)').matches || root.navigator.maxTouchPoints > 0;
+      this.gestureMessage = '';
+      this.gestureHint = element('div', 'gesture-hint'); host.append(this.gestureHint);
+      if (this.touch) {
+        document.body.classList.add('touch-device');
+        document.querySelector('.keyline').textContent = 'One finger anywhere on the game · Tap: ollie · Hold: charge · ↓ duck · → speed · ↑ manual / catch';
+      }
       this.host = host; this.action = action; this.lastPanel = ''; this.help = false;
       this.loading = 'Loading Skater Dudes…'; this.challenges = false;
       this.hud = element('div', 'hud');
@@ -25,7 +32,22 @@
     }
     setLoading(message) { this.loading = message; this.lastPanel = ''; }
     sound(message) { this.audioStatus.textContent = message; }
+    gesture(message) { this.gestureMessage = message; }
     controls(parent) {
+      if (this.touch) {
+        parent.append(element('h2', '', 'One finger. Anywhere on the game.'));
+        const touch = element('dl', 'controls');
+        for (const [action, meaning] of [
+          ['TAP / HOLD', 'Tap and release for a small ollie. Hold still for 900 ms for full charge, then release to pop. Small finger jitter is fine.'],
+          ['DRAG DOWN', 'Hold to duck immediately. Release to stand, never jump. Down also ends a manual or drops a grind.'],
+          ['DRAG RIGHT', 'Hold on plain street to build speed; release to coast.'],
+          ['DRAG UP', 'Hold on ground for a manual. In air, swipe up for a short rail-catch window.'],
+          ['DOWN → UP IN AIR', 'Reverse your finger upward within 400 ms to kickflip, without lifting.'],
+          ['LEFT / RIGHT IN TRICKS', 'Drag sideways to balance a manual, flip or grind. Return near your starting point for neutral.'],
+          ['PAUSE / CANCEL', 'Toolbar buttons stay available. Pause, leaving the game area, a second finger or a canceled touch abandons the hold without jumping.']
+        ]) touch.append(element('dt', '', action), element('dd', '', meaning));
+        parent.append(touch, element('h2', '', 'Keyboard controls also work'));
+      }
       const controls = element('dl', 'controls');
       for (const [key, meaning] of [
         ['TAP SPACE', 'Release before 300 ms for a small ollie. No crouch or charge gauge.'],
@@ -89,10 +111,12 @@
         label.append(check, document.createTextNode(' Add a curb and rail to practice')); intro.append(label);
         intro.append(element('p', 'fineprint', '90 seconds at base speed · 32 hazards · infinite attempts · headphones welcome'));
         guide.append(element('div', 'eyebrow', 'THE HOLD-RELEASE POP'), element('h2', '', 'Hold. Let go. Pop.'),
-          element('p', '', 'A quick tap makes a small ollie. For more height, hold Space, then release it to jump.'),
+          element('p', '', this.touch ? 'One finger anywhere on the game: tap and release for a small ollie. Hold still, then release for height. No screen zones or buttons.' : 'A quick tap makes a small ollie. For more height, hold Space, then release it to jump.'),
           element('div', 'pop-steps', 'HOLD 900 ms  →  RELEASE TO POP'),
           element('p', 'callout', 'Roll for the first 300 ms. Then crouch and charge for 600 ms more: 900 ms total. Keep holding until the RELEASE mark.'),
           element('p', 'fineprint', 'Down → Up: kickflip · Hold Up: manual / grind\nHold Right: build speed on street · Hold Down: duck\nLeft / Right in tricks: balance only · I: all controls'));
+        if (this.touch) guide.append(element('p', 'callout', 'Drag down and hold: duck, no jump. Right: speed. Up: manual / air catch. Down then up in air: flip. Sideways in tricks: balance.'),
+          element('p', 'fineprint', 'Portrait works. Turn sideways for a wider street view. Controls above has the full gesture guide.'));
         content.append(intro, guide); return;
       }
       if (game.status === 'finished' && !this.help) {
@@ -121,6 +145,10 @@
       this.trick.textContent = game.combo ? game.trick : 'ROLL CLEAN TO BANK';
       const show = game.status !== 'playing' || !!this.loading;
       this.panel.hidden = !show; this.hud.hidden = game.status === 'menu' || !!this.loading;
+      this.host.classList.toggle('live-play', !show && game.mode !== 'crash');
+      this.gestureHint.hidden = !this.touch || show;
+      this.gestureHint.textContent = this.gestureMessage || (game.balanceActive ? 'Drag left / right to balance · down to exit' :
+        game.mode === 'air' ? 'Down → up: flip · swipe up: catch' : 'Tap: ollie · hold: charge · ↓ duck · → speed · ↑ manual');
       const key = game.status + ':' + this.help + ':' + this.loading;
       if (show && key !== this.lastPanel) { this.makePanel(game); this.lastPanel = key; }
       const status = game.status === 'playing' ? game.practice ? 'Practice · rolling' : 'The night shift · rolling' : game.status;

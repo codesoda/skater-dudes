@@ -6,26 +6,48 @@
     constructor(game, command = () => {}, trusted = () => {}) {
       this.game = game; this.command = command; this.trusted = trusted;
       this.held = new Set(); this.blocked = new Set(); this.queue = []; this.remove = [];
+      this.sources = new Map([['keyboard', this.held]]); this.owners = new Map(); this.onClear = new Set();
     }
-    feed(code, down, repeat = false) {
+    feed(code, down, repeat = false, source = 'keyboard') {
       if (!keys[code] && !commands[code]) return false;
+      if (!this.sources.has(source)) this.sources.set(source, new Set());
+      const held = this.sources.get(source);
       if (!down) {
-        this.held.delete(code);
-        if (this.blocked.delete(code)) return true;
-        if (keys[code]) this.queue.push([keys[code], false]);
-        return true;
+        held.delete(code);
+        if (source === 'keyboard' && this.blocked.delete(code)) return true;
+        this.release(code, source); return true;
       }
-      if (repeat || this.held.has(code) || this.blocked.has(code)) return true;
-      this.held.add(code); this.trusted();
+      if (repeat || held.has(code) || source === 'keyboard' && this.blocked.has(code)) return true;
+      held.add(code); this.trusted();
       if (commands[code]) this.command(commands[code]);
-      else if (this.game.status === 'playing' && this.game.mode !== 'crash') this.queue.push([keys[code], true]);
+      else if (this.game.status === 'playing' && this.game.mode !== 'crash') {
+        const owners = this.owners.get(code) || new Set();
+        if (!owners.size) this.queue.push([keys[code], true]);
+        owners.add(source); this.owners.set(code, owners);
+      }
       if (this.queue.length > 64) this.clear();
       return true;
     }
-    flush() { for (const [key, down] of this.queue.splice(0)) this.game.key(key, down); }
+    release(code, source, cancel = false) {
+      const owners = this.owners.get(code);
+      if (!owners?.delete(source) || owners.size) return;
+      this.owners.delete(code); this.queue.push([keys[code], false, cancel && code === 'Space']);
+    }
+    cancelSource(source) {
+      for (const code of this.sources.get(source) || []) this.release(code, source, true);
+      if (source !== 'keyboard') this.sources.delete(source);
+    }
+    flush() {
+      for (const [key, down, cancel] of this.queue.splice(0)) {
+        if (cancel) this.game.cancelSpaceHold();
+        else this.game.key(key, down);
+      }
+    }
     clear() {
       for (const code of this.held) this.blocked.add(code);
-      this.held.clear(); this.queue = []; this.game.clearInput();
+      this.held.clear(); this.sources = new Map([['keyboard', this.held]]); this.owners.clear();
+      this.queue = []; this.game.clearInput();
+      for (const reset of this.onClear) reset();
     }
     nativeControl(target) {
       return /^(BUTTON|INPUT|SELECT|TEXTAREA|A)$/.test(target?.tagName || '') || target?.isContentEditable;

@@ -10,7 +10,7 @@ Source: https://github.com/codesoda/skater-dudes
 
 For offline play, build locally using the steps below, then double-click **`index.html`**.
 
-The root file and `dist/index.html` are identical standalone games. Copy either file anywhere. The player needs only a modern browser and a keyboard: no server, network, npm, Python, imports, CDN, or installation. Art, course, settings, provenance, scripts, styles and nine WAVs are embedded.
+The root file and `dist/index.html` are identical standalone games. Copy either file anywhere. The player needs only a modern browser with a keyboard or touchscreen: no server, network, npm, Python, imports, CDN, or installation. Art, course, settings, provenance, scripts, styles and nine WAVs are embedded.
 
 The start screen says: **Dedicated to Oscar, the raddest skater dude I know**
 
@@ -20,7 +20,7 @@ Choose **Jeff** or **Dave** before starting. Jeff is selected by default. Jeff w
 
 Choose **Practice first** to learn on an empty street. The menu checkbox adds a curb and rail. Practice repeats without a timer. **Ride the street** starts a 2.52 km route with 44 objects: 29 meaningful hazards and 15 cracks. It takes 90 seconds at base speed, or less with deliberate speed-building sections. Three concrete jersey barriers need a charged pop. Four overhead bars need Hold Down; their supports sit outside the skating line. Bails retry just past a successfully cleared obstacle. Short spacing uses an earlier cleared obstacle or the start, leaving at least 1.4 seconds before the next obstacle. Failed hazards are never skipped. Banked points stay; the current combo is lost. A clean run ends with results.
 
-Small screens show responsive menus and a scaled 16:9 game. **Keyboard required**; there are no touch controls in V1.
+Small screens show scrollable menus and a scaled 16:9 game. **Keyboard and one-finger phone gestures both work.** Portrait works; landscape gives a wider street view. There is no virtual direction pad or overlay button grid.
 
 ## Controls
 
@@ -40,6 +40,23 @@ Small screens show responsive menus and a scaled 16:9 game. **Keyboard required*
 | M | Mute or unmute. |
 | R | Restart the current mode. |
 | Enter on title | Start the route. |
+
+### Phone gestures
+
+Use one finger anywhere on the live canvas, including behind the score display. Gestures are not tied to screen zones.
+
+| Gesture | Action |
+| --- | --- |
+| Stationary tap, then release | Small ollie on release while rolling. |
+| Hold still, then release | Same 300 ms intent plus 600 ms charge as Space. The left gauge stays full until release. About 12 CSS pixels of jitter is allowed. |
+| Drag down and hold | Duck immediately. Release to stand, **not jump**. This also ends a manual or drops a grind. |
+| Drag right and hold on plain street | Build speed with the same 160 px/s² acceleration and 392 px/s cap. Release for the normal eight-second coast. |
+| Drag up and hold on ground | Manual. Move sideways with the same finger to balance; release to end. |
+| Swipe up in air | A bounded 350 ms rail-catch window, not a latched key. |
+| Down → up reversal in air within 400 ms | Kickflip before lifting your finger. Flip intent wins over rail catch. |
+| Drag left / right during a flip, manual or grind | Continuous balance only, never boost. Return near the gesture origin for neutral. |
+
+A hold that becomes a drag abandons its pending jump without releasing another input source. Physical keyboard keys and touch controls can overlap. Airborne stationary touches never queue a jump for landing. Pause, help, menu, restart, bail, focus loss, orientation changes, leaving the play area, a canceled touch or a second finger cancels touch input without popping. Start a fresh contact afterward. The toolbar stays native and accessible; scrolling and zoom remain normal outside the live canvas. Touch devices show a first-play gesture guide and contextual helper text. All keyboard mappings below remain available, including Space to pop off a grind.
 
 ### Exact Space gesture timeline
 
@@ -87,7 +104,7 @@ Development requires Node.js 22+, npm, and Python 3.10+. CI uses Node.js 24, Pyt
 ```sh
 npm ci
 python3 -m pip install -r assets/requirements-build.txt
-npx --no-install playwright install chromium --with-deps
+npx --no-install playwright install chromium webkit --with-deps
 python3 scripts/prepare_assets.py
 SHREDDER_BROWSER=chromium-headless-shell npm test
 npm run scan
@@ -97,7 +114,7 @@ npm run scan
 
 ### GitHub Pages
 
-Pushes to `main`, pull requests targeting `main`, and manual runs use `.github/workflows/pages.yml`. Checks install locked npm dependencies and pinned Pillow, prepare offline QA fixtures, run the full test suite with Chromium headless shell, then require the quality scan and clean dependency audit. Failed scans retain their reports and error logs for 14 days.
+Pushes to `main`, pull requests targeting `main`, and manual runs use `.github/workflows/pages.yml`. Checks install locked npm dependencies and pinned Pillow, prepare offline QA fixtures, run the full test suite with Chromium headless shell and WebKit phone contexts, then require the quality scan and clean dependency audit. Failed scans retain their reports and error logs for 14 days.
 
 Only a successful `main` run outside a pull request uploads the checked `dist/` artifact and deploys it to GitHub Pages. Pull requests never deploy. The repository must use **GitHub Actions** as its Pages source. Deployments use the `github-pages` environment and run one at a time.
 
@@ -107,7 +124,7 @@ The browser test uses installed Google Chrome on macOS when available; otherwise
 
 `npm test` rebuilds the real bundle, checks all Python asset/export tests, and discovers **every `tests/*.test.cjs`**. Test files run serially so independent browser suites do not compete during real-clock input and frame measurements. Browser tests open a `file://` URL with networking offline. The full-route test takes about 89 real seconds with a trusted opening boost and coast; it does not accelerate rAF or mutate player position. `tests/artifacts/` contains screenshots, measured key timings, decoded-audio bounds, normal-clock performance samples and the route log. Generated evidence is ignored by Git.
 
-`npm run scan` uses pinned Aislop **0.16.1** with recognized `.aislop/config.yml`, `ci.failBelow: 95`. It requires scoreable coverage, all five engines, a successful native CI result, and a separate clean npm audit. It does not lower thresholds or disable finding rules. Playwright is pinned to **1.62.1**. Authored JS, Python, scripts and tests remain in scope. Only generated output, media, dependencies, local research and debug artifacts are excluded.
+`npm run scan` uses pinned Aislop **0.16.1** with recognized `.aislop/config.yml`, `ci.failBelow: 95`. It requires scoreable coverage, all five engines, a successful native CI result, and a separate clean npm audit. It does not lower thresholds or disable finding rules. Playwright is pinned to **1.62.1**. Authored JS, Python, scripts and tests remain in scope. Only generated output, media, dependencies, local research, debug artifacts and the narrow `vendor/zingtouch/**` third-party path are excluded. No authored integration or test code is excluded.
 
 To regenerate outputs explicitly:
 
@@ -118,6 +135,12 @@ npm run build
 ```
 
 The builder runs the needed preparation script if processed inputs or character poses are missing. It upgrades old 33- or 45-image manifests automatically and rejects incomplete character definitions. Both preparation scripts preserve the other manifest section. Original PNGs are fingerprinted and remain unchanged. The composer uses only Python's standard library. Its deterministic score lives in `assets/audio/score.json`.
+
+## Offline gesture dependency
+
+`zingtouch` is pinned to **1.0.6**, with no runtime npm dependencies. `vendor/zingtouch/zingtouch.min.js` is the verbatim official npm distribution. Its full MIT license is embedded in both standalone HTML files. `LICENSE`, `NOTICE` and `provenance.json` record upstream attribution, tarball integrity and file hashes. Tests compare the installed locked npm package to the tracked vendor files. Python builds use only the checked-in bundle, not npm, a CDN or a network download. The original bundle's source-map comment stays intact; the optional developer-tools map is not shipped.
+
+The adapter uses ZingTouch's built-in Tap, Pan and Swipe recognizers and a custom Gesture lifecycle for stationary holds. The game still applies all actions through its fixed-step input queue. ZingTouch 1.0.6 prefers TouchEvent on browsers that also expose PointerEvent and does not handle cancel events itself. The adapter adds primary-contact gating, pointer capture where applicable, window cleanup and safe cancellation. It does not patch the vendor bundle.
 
 ## Art, sound and provenance
 
@@ -143,6 +166,8 @@ The current coast-tuning evidence is in `tests/artifacts/coast-tuning/validation
 
 Gaps use fixed-size broken asphalt endcaps anchored at the collision edges and a repeated cutaway center. The final center tile is cropped, not stretched. The cutaway stays about 58 pixels deep below the street. The generated original remains unchanged; `assets/crop-map.json` records region bounds, normalization and the narrow repeat-seam repair. No new art generation runs.
 See `tests/artifacts/skater-dudes/` for title, chooser and Jeff/Dave gameplay screenshots. `tests/artifacts/route.json` holds the real-time browser traversal evidence. Route and obstacle gameplay screenshots use normal runs, not teleports. `pose-fixtures.json` explicitly labels the isolated 24-pose Canvas fixtures. A result-screen fixture tests menu return without claiming another full traversal. Other explicit fixtures cover audio failures, image failures and a burst of sound cues. Some headless browsers need a synthetic blur event; `focus-evidence.json` states whether that fallback was used.
+
+Mobile evidence lives in `tests/artifacts/mobile-gestures/validation.json`. Chromium phone tests use trusted CDP touch start/move/end/cancel with the normal clock. They cover holds, drags, flips, balance, boost/coast and an eleven-hazard street segment with a rail and two duck bars, without teleports. WebKit phone tests use actual trusted `touchscreen.tap`. Its long-hold, drag, swipe and lost-pointer-capture tests are explicitly synthetic lifecycle fixtures, not physical Safari testing. Both engines load the real standalone bundle and assert zero runtime errors and zero HTTP(S) requests. WebKit's offline emulation rejects even `file://` navigation, so its tests deny HTTP(S) through request interception instead. CI installs both pinned Playwright engines and runs these tests without skips. No actual iPhone hardware test or mobile control-feel study has occurred.
 
 All testing here is **automated**, including trusted browser keyboard input. No human control-feel study or speaker/headphone audition has occurred. Numeric waveform tests cannot judge timbre or musical taste.
 

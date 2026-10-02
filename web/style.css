@@ -503,6 +503,49 @@ footer {
   aspect-ratio:auto;
   min-height:min(54vw,698px);
 }
+/* Only the live play surface owns touch gestures. Menus and toolbar stay native. */
+.live-play canvas {
+  touch-action:none;
+  user-select:none;
+  -webkit-user-select:none;
+  -webkit-touch-callout:none;
+}
+.gesture-hint {
+  position:absolute;
+  bottom:2%;
+  left:10%;
+  right:3%;
+  pointer-events:none;
+  color:#fff3cf;
+  text-shadow:0 1px 3px #000,0 0 4px #000;
+  font:700 clamp(10px,1.3cqw,15px) ui-monospace,monospace;
+}
+.touch-device .toolbar button {
+  min-height:44px;
+}
+.touch-device .controls dd {
+  font-size:14px;
+}
+.touch-device .controls dt {
+  font-size:12px;
+}
+.touch-device .keyline {
+  display:block;
+  line-height:1.5;
+}
+.touch-device .under-stage {
+  flex-wrap:wrap;
+  gap:6px;
+}
+@media (pointer:coarse) and (orientation:landscape) {
+  .stage.live-play {
+    width:min(100%,calc((100svh - 68px) * 16 / 9));
+    margin-inline:auto;
+  }
+  .site-header {
+    padding:5px 0;
+  }
+}
 .stage:has(.overlay:not([hidden])) canvas {
   position:absolute;
   height:auto;

@@ -97,6 +97,8 @@
       if (this.mode === 'manual') this.endManual();
       this.space = { at: this.time }; this.pushPhase = 0;
     }
+    // A touch changing into a drag abandons its hold; it must not pop.
+    cancelSpaceHold() { this.space = null; this.keys.Space = false; }
     releaseSpace() {
       if (!this.space) return;
       const charge = this.charge;

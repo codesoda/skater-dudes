@@ -10,7 +10,8 @@ const [checks, deploy] = workflow.split('\n  deploy:\n');
 test('Pages checks install locked tools and prepare ignored QA before the full suite', () => {
   const commands = [...checks.matchAll(/^        run: (.+)$/gm)].map(match => match[1]);
   assert.deepEqual(commands, ['npm ci', 'python3 -m pip install -r assets/requirements-build.txt',
-    'npx --no-install playwright install chromium --with-deps', 'python3 scripts/prepare_assets.py',
+    'npx --no-install playwright install chromium --with-deps',
+    'npx --no-install playwright install webkit --with-deps', 'python3 scripts/prepare_assets.py',
     'npm test', 'npm run scan']);
   assert.match(checks, /SHREDDER_BROWSER: chromium-headless-shell/);
   assert.match(checks, /node-version: '24'/);

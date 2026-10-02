@@ -8,6 +8,8 @@
   const ui = new window.ShredderUI.UI(document.getElementById('stage'), command, data);
   const audio = new window.ShredderAudio.Audio(data.audio || {}, message => ui.sound(message));
   const input = new window.ShredderInput.Input(game, command, () => audio.unlock());
+  const gestures = new window.ShredderGestures.Gestures(game, input, message => ui.gesture(message));
+  window.ShredderGestures.attach(canvas, gestures);
   let previousTime = null, loaded = false;
   function resetClock() { runner.reset(); previousTime = null; input.clear(); }
   function activate() {
@@ -40,6 +42,9 @@
       else { pause(); ui.help = true; }
     }
     ui.update(game);
+    // Menus can be long on phones. Return to the live canvas and toolbar after
+    // their document-space layout collapses; do not lock native menu scrolling.
+    if (game.status === 'playing' && ui.touch) window.scrollTo({ top: 0, behavior: 'instant' });
   }
   input.attach(window, pause);
   for (const [id, name] of [['pause-button', 'pause'], ['help-button', 'help'], ['mute-button', 'mute']]) {
@@ -48,9 +53,9 @@
   canvas.addEventListener('pointerdown', () => { canvas.focus(); audio.unlock(); });
   function frame(now) {
     const delta = previousTime === null ? 0 : (now - previousTime) / 1000; previousTime = now;
-    const alpha = runner.advance(delta, () => input.flush());
+    const alpha = runner.advance(delta, () => { gestures.update(); input.flush(); });
     const events = game.drainEvents();
-    if (events.some(event => event.type === 'crash' || event.type === 'recover')) input.clear();
+    if (events.some(event => event.type === 'crash' || event.type === 'recover' || event.type === 'finish')) input.clear();
     audio.update(game, events);
     if (game.status !== 'playing') audio.setActive(false);
     renderer.render(game, game.status === 'playing' ? alpha : 1); ui.update(game);
@@ -71,6 +76,6 @@
     ui.update(game);
   }
   // Small inspection surface for local browser playtests; never used to bypass gameplay.
-  window.SHREDDER = { game, runner, input, renderer, audio, ui, command };
+  window.SHREDDER = { game, runner, input, gestures, renderer, audio, ui, command };
   load(); requestAnimationFrame(frame);
 })();

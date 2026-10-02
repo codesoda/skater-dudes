@@ -1,0 +1,10 @@
+{
+  "package": "zingtouch",
+  "version": "1.0.6",
+  "registry": "https://registry.npmjs.org/zingtouch/-/zingtouch-1.0.6.tgz",
+  "integrity": "sha512-S7jcR7cSRy28VmQBO0Tq7ZJV4pzfvvrTU9FrrL0K1QPpfBal9wm0oKhoCuifc+PPCq+hQMTJr5E9XKUQDm00VA==",
+  "files": {
+    "zingtouch.min.js": "2f0e74654123d5186dbd777c9ae68859a0b39d69188bd5662836e60c238e2a7c",
+    "LICENSE": "edbf1a1cb17a20161297990941fd6e951f41ff17e608bd536ac2d876c66bc8a9"
+  }
+}
