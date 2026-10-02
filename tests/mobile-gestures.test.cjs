@@ -8,6 +8,7 @@ const { chromium, webkit } = require('playwright');
 const { lightJumpPhase } = require('./route-light-jump.js');
 const { shouldLoadCharge } = require('./route-charged-jump.js');
 const { routeTarget } = require('./route-target.js');
+const { railCrossingSeconds, shouldCatchRail } = require('./route-rail-catch.js');
 const settings = require('../settings.json');
 const OUT = path.join(__dirname, 'artifacts/mobile-gestures');
 const URL = pathToFileURL(path.join(__dirname, '../index.html')).href;
@@ -65,6 +66,43 @@ async function cdpTouch(context, page) {
       await this.end();
     }
   };
+}
+async function observeMobileRoute(page) {
+  await page.evaluate(() => {
+    const { game, gestures } = window.SHREDDER;
+    const history = { snapshots: [], native: [], events: [], catchEvents: [], pulses: [] };
+    const keep = (list, value, limit = 128) => { list.push(value); if (list.length > limit) list.shift(); };
+    const snapshot = () => ({ wall: performance.now(), time: game.time, x: game.worldX, z: game.jumpZ,
+      velocity: game.velocityZ, mode: game.mode, bails: game.bails, up: game.keys.Up,
+      contact: !!gestures.contact, catchUntil: gestures.catchUntil,
+      owners: [...(gestures.input.owners.get('ArrowUp') || [])] });
+    const native = e => keep(history.native, { type: e.type, trusted: e.isTrusted,
+      x: e.changedTouches[0]?.clientX, y: e.changedTouches[0]?.clientY, state: snapshot() });
+    const types = ['touchstart', 'touchmove', 'touchend', 'touchcancel'];
+    for (const type of types) window.addEventListener(type, native, true);
+    const originals = { pan: gestures.pan, swipe: gestures.swipe, end: gestures.end };
+    for (const name of Object.keys(originals)) gestures[name] = function (...args) {
+      const before = snapshot(), result = originals[name].apply(this, args);
+      keep(history.catchEvents, { name, before, after: snapshot() }); return result;
+    };
+    const emit = game.emit;
+    game.emit = function (type, detail) {
+      keep(history.events, { type, state: snapshot() }); return emit.call(this, type, detail);
+    };
+    let frame, lastPulse;
+    const sample = () => {
+      const s = snapshot(), pulse = JSON.stringify([s.up, s.catchUntil, s.owners]);
+      keep(history.snapshots, s, 900);
+      if (pulse !== lastPulse) { keep(history.pulses, s); lastPulse = pulse; }
+      frame = requestAnimationFrame(sample);
+    };
+    frame = requestAnimationFrame(sample);
+    window.stopMobileRouteHistory = () => {
+      cancelAnimationFrame(frame); Object.assign(gestures, originals); game.emit = emit;
+      for (const type of types) window.removeEventListener(type, native, true);
+      return history;
+    };
+  });
 }
 async function fixtureTouch(page, type, p, id = 1) {
   // Explicit synthetic WebKit lifecycle fixture. Playwright only exposes trusted
@@ -280,52 +318,72 @@ test('Chromium phone: trusted normal-clock gestures and real street hazards, no 
     await pointerPage.close();
   });
   await t.test('landscape real route clears eleven hazards including charged obstacles, rail and two duck bars', async () => {
-    await page.bringToFront();
-    if ((await state(page)).status === 'playing') await page.keyboard.press('KeyP');
-    await page.getByRole('button', { name: 'Choose dude', exact: true }).tap();
-    await page.setViewportSize({ width: 844, height: 390 });
-    await page.getByRole('button', { name: 'Ride the street', exact: false }).tap();
-    await page.locator('#game').scrollIntoViewIfNeeded();
-    const p = await point(page), box = await page.locator('#game').boundingBox();
-    assert.ok(Math.abs(box.width / box.height - 16 / 9) < .02);
-    const toolbar = await page.locator('.toolbar').boundingBox(); assert.ok(toolbar.y >= 0 && toolbar.y + toolbar.height < 390);
-    const objects = await page.evaluate(() => window.SHREDDER.game.objects.filter(o => o.type !== 'crack'));
-    let target = null, phase = '', finger = false, catching = false, duck = false;
-    const started = Date.now(), routeStart = await page.evaluate(() => window.mobileQA.events.length);
-    while ((await state(page)).x < 9410 && Date.now() - started < 42000) {
-      const s = await state(page); assert.equal(s.bails, 0, JSON.stringify(s));
-      const object = routeTarget(objects, s, target);
-      if (!object) break;
-      if (object.id !== target) { target = object.id; phase = ''; catching = false; }
-      const distance = object.x - s.x;
-      if (finger && !duck && !['loading', 'light-ready'].includes(phase) && s.mode !== 'grind') { await touch.end(); finger = false; }
-      if (duck && s.x > object.x + object.width + 25) { await touch.end(); finger = false; duck = false; }
-      if (object.type === 'low_bar') {
-        if (!finger && distance < 160) { await touch.start(p); await touch.move({ x: p.x, y: p.y + 35 }); finger = true; duck = true; }
-        if (distance < 0 && distance > -80) assert.equal(s.crouch, true);
-      } else if (s.mode === 'rolling' && !phase) {
-        if (object.charged && shouldLoadCharge(object, s, settings) || !object.charged && lightJumpPhase('', distance) === 'light-ready') {
-          await touch.start(p); finger = true; phase = object.charged ? 'loading' : 'light-ready';
+    const controller = [], historyStarted = Date.now();
+    let failure;
+    try {
+      await observeMobileRoute(page);
+      await page.bringToFront();
+      if ((await state(page)).status === 'playing') await page.keyboard.press('KeyP');
+      await page.getByRole('button', { name: 'Choose dude', exact: true }).tap();
+      await page.setViewportSize({ width: 844, height: 390 });
+      await page.getByRole('button', { name: 'Ride the street', exact: false }).tap();
+      await page.locator('#game').scrollIntoViewIfNeeded();
+      const p = await point(page), box = await page.locator('#game').boundingBox();
+      assert.ok(Math.abs(box.width / box.height - 16 / 9) < .02);
+      const toolbar = await page.locator('.toolbar').boundingBox(); assert.ok(toolbar.y >= 0 && toolbar.y + toolbar.height < 390);
+      const objects = await page.evaluate(() => window.SHREDDER.game.objects.filter(o => o.type !== 'crack'));
+      let target = null, phase = '', finger = false, catching = false, duck = false;
+      const started = Date.now(), routeStart = await page.evaluate(() => window.mobileQA.events.length);
+      while ((await state(page)).x < 9410 && Date.now() - started < 42000) {
+        const s = await state(page);
+        const object = routeTarget(objects, s, target);
+        controller.push({ wall: Date.now() - historyStarted, state: s, target, phase, finger, catching, duck,
+          crossingSeconds: object ? railCrossingSeconds(object, s, settings) : null });
+        if (controller.length > 256) controller.shift();
+        assert.equal(s.bails, 0, JSON.stringify(s));
+        if (!object) break;
+        if (object.id !== target) { target = object.id; phase = ''; catching = false; }
+        const distance = object.x - s.x;
+        if (finger && !duck && !['loading', 'light-ready'].includes(phase) && s.mode !== 'grind') { await touch.end(); finger = false; }
+        if (duck && s.x > object.x + object.width + 25) { await touch.end(); finger = false; duck = false; }
+        if (object.type === 'low_bar') {
+          if (!finger && distance < 160) { await touch.start(p); await touch.move({ x: p.x, y: p.y + 35 }); finger = true; duck = true; }
+          if (distance < 0 && distance > -80) assert.equal(s.crouch, true);
+        } else if (s.mode === 'rolling' && !phase) {
+          if (object.charged && shouldLoadCharge(object, s, settings) || !object.charged && lightJumpPhase('', distance) === 'light-ready') {
+            await touch.start(p); finger = true; phase = object.charged ? 'loading' : 'light-ready';
+          }
+        } else if (finger && (phase === 'loading' && distance <= (object.popDistance || 110) || phase === 'light-ready' && lightJumpPhase(phase, distance) === 'jumped')) {
+          await touch.end(); finger = false; phase = 'jumped';
         }
-      } else if (finger && (phase === 'loading' && distance <= (object.popDistance || 110) || phase === 'light-ready' && lightJumpPhase(phase, distance) === 'jumped')) {
-        await touch.end(); finger = false; phase = 'jumped';
+        if (phase === 'jumped' && !catching && shouldCatchRail(object, s, settings)) {
+          await touch.swipe(p, 0, -40); catching = true;
+        }
+        if (s.mode === 'grind' && !finger) { await touch.start(p); await touch.move({ x: p.x - 35, y: p.y }); finger = true; }
+        if (finger && s.mode === 'grind' && s.balance < -.06) { await touch.move(p); }
+        if (finger && !duck && phase === 'jumped' && s.mode !== 'grind' && object.type === 'rail') { await touch.end(); finger = false; }
+        await wait(15);
+        if (duck && (await state(page)).x > object.x + object.width + 25) { await touch.end(); finger = false; duck = false; }
       }
-      if (object.type === 'rail' && phase === 'jumped' && s.mode === 'air' && s.velocity < 0 && s.z < 145 && !catching) {
-        await touch.swipe(p, 0, -40); catching = true;
+      if (finger) await touch.end();
+      const final = await state(page), events = await page.evaluate(i => window.mobileQA.events.slice(i), routeStart);
+      assert.ok(final.x >= 9410); assert.equal(final.bails, 0); assert.ok(events.some(e => e.type === 'grind'));
+      assert.ok(events.filter(e => e.type === 'ollie').length >= 8);
+      await screenshot(page, 'chromium-landscape-real-route');
+      fs.writeFileSync(path.join(OUT, 'trusted-touch-route.json'), JSON.stringify({ final, events, wallSeconds: (Date.now() - started) / 1000,
+        controller: 'Chromium CDP trusted touch start/move/end; normal clock; read-only state feedback; no teleports, key calls or physics writes' }, null, 2));
+    } catch (error) { failure = error; throw error; }
+    finally {
+      let evidence;
+      try { evidence = await page.evaluate(() => window.stopMobileRouteHistory?.() || {}); }
+      catch (error) { evidence = { telemetryError: error.message }; }
+      const report = { error: failure?.stack, wallSeconds: (Date.now() - historyStarted) / 1000, controller, ...evidence };
+      fs.writeFileSync(path.join(OUT, 'route-timing-history.json'), JSON.stringify(report, null, 2));
+      if (failure) {
+        const directory = path.join(__dirname, 'artifacts/ci-browser'); fs.mkdirSync(directory, { recursive: true });
+        fs.writeFileSync(path.join(directory, 'mobile-route.json'), JSON.stringify(report, null, 2));
       }
-      if (s.mode === 'grind' && !finger) { await touch.start(p); await touch.move({ x: p.x - 35, y: p.y }); finger = true; }
-      if (finger && s.mode === 'grind' && s.balance < -.06) { await touch.move(p); }
-      if (finger && !duck && phase === 'jumped' && s.mode !== 'grind' && object.type === 'rail') { await touch.end(); finger = false; }
-      await wait(15);
-      if (duck && (await state(page)).x > object.x + object.width + 25) { await touch.end(); finger = false; duck = false; }
     }
-    if (finger) await touch.end();
-    const final = await state(page), events = await page.evaluate(i => window.mobileQA.events.slice(i), routeStart);
-    assert.ok(final.x >= 9410); assert.equal(final.bails, 0); assert.ok(events.some(e => e.type === 'grind'));
-    assert.ok(events.filter(e => e.type === 'ollie').length >= 8);
-    await screenshot(page, 'chromium-landscape-real-route');
-    fs.writeFileSync(path.join(OUT, 'trusted-touch-route.json'), JSON.stringify({ final, events, wallSeconds: (Date.now() - started) / 1000,
-      controller: 'Chromium CDP trusted touch start/move/end; normal clock; read-only state feedback; no teleports, key calls or physics writes' }, null, 2));
   });
   await t.test('both library recognition and offline runtime are clean', async () => {
     const evidence = await page.evaluate(() => window.mobileQA);
