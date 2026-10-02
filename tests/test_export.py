@@ -1,12 +1,15 @@
 """Structural tests for the actual standalone export, including every asset."""
 import base64
 import importlib.util
+from io import BytesIO
 import json
 from pathlib import Path
 import re
 import shutil
 import tempfile
 import unittest
+
+from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
 SPEC = importlib.util.spec_from_file_location("build", ROOT / "scripts/build.py")
@@ -81,9 +84,12 @@ class ExportTests(unittest.TestCase):
             shutil.copytree(ROOT/'scripts', root/'scripts')
             manifest = json.loads((root/'assets/manifest.json').read_text())
             manifest.pop('characters')
+            generated_paths = set()
             for key in list(manifest['images']):
                 if key.startswith('dave_') or key in {'jersey_barrier', 'gap_left', 'gap_center', 'gap_right'}:
-                    (root/manifest['images'].pop(key)['path']).unlink()
+                    path = manifest['images'].pop(key)['path']
+                    generated_paths.add(path)
+                    (root/path).unlink()
             self.assertEqual(len(manifest['images']), 33)
             (root/'assets/manifest.json').write_text(json.dumps(manifest))
             upgraded = BUILD.prepare(root)
@@ -97,7 +103,19 @@ class ExportTests(unittest.TestCase):
             self.assertEqual(BUILD.prepare(root), self.manifest)
             for section in ('images', 'audio'):
                 for entry in self.manifest[section].values():
-                    self.assertEqual((root/entry['path']).read_bytes(), (ROOT/entry['path']).read_bytes())
+                    expected = (ROOT/entry['path']).read_bytes()
+                    if entry['path'] in generated_paths:
+                        # This fixture deliberately deletes the canonical PNG.
+                        # New assets use the local encoder, but must keep every
+                        # approved pixel. Retained files still require raw bytes.
+                        with Image.open(ROOT/entry['path']) as approved, Image.open(root/entry['path']) as actual:
+                            self.assertEqual(actual.mode, approved.mode)
+                            self.assertEqual(actual.size, approved.size)
+                            self.assertEqual(actual.tobytes(), approved.tobytes())
+                            encoded = BytesIO()
+                            approved.save(encoded, format='PNG', optimize=False)
+                            expected = encoded.getvalue()
+                    self.assertEqual((root/entry['path']).read_bytes(), expected)
 
     def test_invalid_character_schema_is_rejected(self):
         with tempfile.TemporaryDirectory(prefix='skater-dudes-schema-') as tmp:

@@ -768,7 +768,7 @@
       },
       "origin": "Existing user-approved original generated side-on PNGs; no new generation.",
       "processing": "scripts/prepare_assets.py",
-      "processorSha256": "8618b6ebf5ca62b5b6b46628e33a7da0ed07cfc8ad6022bcc8aade9346fc4d52",
+      "processorSha256": "62e54e334365f4305364e93d397af397245b36021d73aff5b42b3300d91f86ad",
       "referenceAssetsIncluded": false,
       "sourceSha256": {
         "assets/source/city.png": "8ceb47addb40e82834a904649aa3ba17f077054e6ff84006017c739f3c90b3f6",

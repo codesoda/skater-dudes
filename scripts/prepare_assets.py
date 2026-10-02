@@ -247,6 +247,25 @@ def preview_assets(assets, previews):
     preview.save(qa / 'contact-sheet.png')
 
 
+def save_canonical_asset(image, canonical, output):
+    """Keep approved PNG bytes only after verifying the freshly computed RGBA.
+
+    PNG encoders can produce different bytes for identical pixels. Never let
+    that replace approved files, or let a stale file hide a processing change.
+    """
+    if not canonical.exists():
+        image.save(output, optimize=False)
+        return
+    with Image.open(canonical) as approved:
+        if image.mode != 'RGBA' or approved.mode != 'RGBA' or image.size != approved.size:
+            raise ValueError('Canonical asset mismatch: %s (generated %s %s; approved %s %s)' %
+                             (canonical.name, image.mode, image.size, approved.mode, approved.size))
+        if image.tobytes() != approved.tobytes():
+            raise ValueError('Canonical asset mismatch: %s (RGBA pixels differ)' % canonical.name)
+    if canonical.resolve() != output.resolve():
+        output.write_bytes(canonical.read_bytes())
+
+
 def prepare(source_root=ROOT, output_root=ROOT):
     source_root, output_root = Path(source_root), Path(output_root)
     assets = output_root / 'assets'
@@ -262,7 +281,7 @@ def prepare(source_root=ROOT, output_root=ROOT):
 
     def emit(name, image, anchor, draw_width, draw_height, info, **extra):
         path = processed / (name + '.png')
-        image.save(path, optimize=False)
+        save_canonical_asset(image, source_root / 'assets/processed' / path.name, path)
         entries[name] = dict(path='assets/processed/' + name + '.png',
                              width=image.width, height=image.height,
                              anchor=list(anchor), drawWidth=draw_width,
