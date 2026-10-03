@@ -116,6 +116,10 @@
     }
     obstacle(o, game, camera) {
       const c = this.ctx, x = o.x - camera, y = this.groundY(game, o.laneY || 0);
+      if (o.speedRequired) {
+        c.fillStyle = '#ffbf66'; c.fillRect(x - o.minPrep, y + 32, 4, 18);
+        this.text('BOOST RUN-UP →', x - o.minPrep, y + 82, 12, '#ffbf66');
+      }
       if (o.charged) {
         const hold = game.holdDistance(o);
         c.fillStyle = '#e1b474'; c.fillRect(x - hold, y + 32, 3, 18);
@@ -126,7 +130,7 @@
       }
       if (o.type === 'gap') {
         this.gap(o, x, y);
-        this.text('GAP', x + o.width / 2, y + 76, 11, '#f1b75b', 'center'); return;
+        this.text(o.speedRequired ? 'BOOST GAP · 370+ SPEED AT RELEASE' : o.hint || 'GAP', x + o.width / 2, y + 76, 11, '#f1b75b', 'center'); return;
       }
       if (o.type === 'crack') {
         if (!this.sprite('crack', x, y, 54, 10)) {
@@ -143,8 +147,9 @@
         for (const tread of game.solidParts(o)) this.concreteBlock(tread, tread.x - camera, y);
       } else if (a && this.images[o.type]) {
         const contact = o.type === 'low_bar' ? (a.clearanceY ?? 22) : (a.contactTop ?? (o.type === 'bench' ? 68 : 4));
-        const h = a.height * o.height / Math.max(1, a.anchor[1] - contact);
-        this.sprite(o.type, x + o.width / 2, y, o.width, h);
+        const base = o.type === 'rail' ? o.baseHeight || 0 : 0;
+        const h = a.height * (o.height - base) / Math.max(1, a.anchor[1] - contact);
+        this.sprite(o.type, x + o.width / 2, y - base, o.width, h);
       } else {
         c.fillStyle = '#a7b5bd';
         if (o.type === 'low_bar') {
@@ -159,6 +164,24 @@
       if (o.hint) this.text(o.hint, x + 50, y - o.height - 14, 11, '#a5efda');
       if (o.charged) this.text('▲', x + o.width / 2, y + 25, 13, '#ffc062', 'center');
     }
+    manualStance(game) {
+      const flat = this.data.images.board_flat, deck = this.data.images.board_manual;
+      return { pose: game.balance > .12 ? 'lean_forward' : 'lean_back', slope: -.26, offset: .5,
+        wheels: (flat.groundAnchor[1] - flat.anchor[1]) * flat.drawHeight / flat.height -
+          (deck.groundAnchor[1] - deck.anchor[1]) * deck.drawHeight / deck.height };
+    }
+    treBoard(progress) {
+      // Project two independent 3D rotations of the deck, never the body.
+      // Long axis yaws through depth; roll turns the transverse axis over.
+      const yaw = progress * Math.PI * 2, roll = progress * Math.PI * 2;
+      const a = Math.cos(yaw), b = .35 * Math.sin(yaw);
+      const c = Math.sin(yaw) * Math.sin(roll), d = Math.cos(roll) - .35 * Math.cos(yaw) * Math.sin(roll);
+      const face = a * d - b * c;
+      this.ctx.save(); this.ctx.translate(0, 9 * Math.sin(progress * Math.PI));
+      this.ctx.transform(a, b, c, d, 0, 0);
+      if (!this.sprite(Math.abs(face) < .2 ? 'board_edge' : face < 0 ? 'board_flip' : 'board_flat', 0, 0, 64)) this.sprite('board_flat', 0, 0, 64);
+      this.ctx.restore();
+    }
     skater(game, x, feet, laneGround) {
       const c = this.ctx;
       if (game.mode === 'grind') {
@@ -169,16 +192,17 @@
       let pose = 'roll', board = 'board_flat';
       if (game.mode === 'crash') pose = 'crash';
       else if (game.mode === 'grind') pose = 'grind';
-      else if (game.mode === 'manual') { pose = 'manual'; board = 'board_manual'; }
+      else if (game.mode === 'manual') { pose = this.manualStance(game).pose; board = 'board_manual'; feet += this.manualStance(game).wheels; }
       else if (game.mode === 'air') pose = 'ollie';
       else if (game.crouching) pose = 'crouch';
       else if (game.pushPhase > 0) pose = game.pushPhase < 0.5 ? 'push1' : 'push2';
       if (game.mode !== 'grind' && game.balanceActive && !game.flip && Math.abs(game.balance) > 0.12) pose = game.balance > 0 ? 'lean_forward' : 'lean_back';
-      const progress = game.flip ? Math.min(1, (game.time - game.flip.at) / game.cfg.flipDuration) : 0;
+      const progress = game.flip ? Math.min(1, (game.time - game.flip.at) / (game.flip.duration || game.cfg.flipDuration)) : 0;
       if (game.flip) pose = progress < 0.78 ? 'flip' : 'catch';
       c.save(); c.translate(x + (game.mode === 'grind' ? Math.sin(game.time * 70) * .35 : 0), feet);
       if (game.mode === 'crash') { c.translate(24, -2); c.rotate(0.2); }
-      if (game.flip && progress < 0.9) {
+      if (game.flip?.kind === 'tre') this.treBoard(progress);
+      else if (game.flip && progress < 0.9) {
         c.save(); c.translate(0, 9); c.rotate(Math.sin(progress * Math.PI * 2) * 0.18);
         c.scale(1, Math.max(0.18, Math.abs(Math.cos(progress * Math.PI * 2))));
         if (!this.sprite(progress > 0.25 && progress < 0.72 ? 'board_flip' : 'board_edge', 0, 0, 64)) this.sprite('board_flat', 0, 0, 64);
@@ -189,6 +213,10 @@
       // Missing Dave art must never disguise itself as Jeff. Load gates all body poses.
       c.save();
       if (game.mode === 'grind') c.transform(1, 0, game.balance * .18, 1, 0, 0);
+      if (game.mode === 'manual') {
+        const stance = this.manualStance(game);
+        c.transform(1, stance.slope, 0, 1, 0, stance.offset);
+      }
       if (!this.sprite(character.poses[pose], 0, 0)) this.sprite(character.poses.roll, 0, 0);
       c.restore(); c.restore();
       if (game.mode === 'grind') {
@@ -241,12 +269,17 @@
       if (!game.flip && (game.mode === 'manual' || game.mode === 'grind')) {
         const characters = this.data.characters;
         const character = Object.hasOwn(characters, game.characterId) ? characters[game.characterId] : characters.jeff;
-        const pose = game.mode === 'manual' && Math.abs(game.balance) > .12 ? game.balance > 0 ? 'lean_forward' : 'lean_back' : game.mode;
+        const pose = game.mode === 'manual' ? this.manualStance(game).pose : game.mode;
         const body = this.data.images[character.poses[pose]], board = this.data.images.board_flat;
         // Match the rendered body anchor, including truck contact on elevated grinds.
         if (game.mode === 'grind') feet += (board.groundAnchor[1] - board.truckAnchor[1]) * board.drawHeight / board.height;
+        let bodyTop = -body.anchor[1] * body.drawHeight / body.height;
+        if (game.mode === 'manual') {
+          const stance = this.manualStance(game); feet += stance.wheels;
+          bodyTop += stance.offset + stance.slope * (body.width - body.anchor[0]) * body.drawWidth / body.width;
+        }
         const center = Math.max(98, Math.min(862, game.cfg.playerScreenX));
-        const top = Math.max(8, Math.min(476, feet - body.anchor[1] * body.drawHeight / body.height - 8 - 56));
+        const top = Math.max(8, Math.min(476, feet + bodyTop - 8 - 56));
         c.fillStyle = 'rgba(15,23,37,.94)'; c.fillRect(center - 90, top, 180, 56);
         const label = game.mode === 'grind' && game.time - game.grindAt < .75 ? '50-50 LOCKED' : game.mode.toUpperCase();
         this.text(label, center, top + 16, 11, '#e2d8ff', 'center');
@@ -257,8 +290,9 @@
         return;
       }
       c.fillStyle = 'rgba(15,23,37,.94)'; c.fillRect(305, 49, 350, 93);
-      const flip = game.flip, progress = flip ? Math.min(1, (game.time - flip.at) / game.cfg.flipDuration) : 1;
-      const label = flip ? progress < 1 ? 'KICKFLIP · ROTATING' : 'KICKFLIP · CATCH READY' : game.mode === 'grind' && game.time - game.grindAt < .75 ? '50-50 LOCKED' : game.mode.toUpperCase();
+      const flip = game.flip, progress = flip ? Math.min(1, (game.time - flip.at) / (flip.duration || game.cfg.flipDuration)) : 1;
+      const flipName = flip?.kind === 'tre' ? 'TRE FLIP' : 'KICKFLIP';
+      const label = flip ? flipName + (progress < 1 ? ' · ROTATING' : ' · CATCH READY') : game.mode === 'grind' && game.time - game.grindAt < .75 ? '50-50 LOCKED' : game.mode.toUpperCase();
       this.text(label, 480, 69, 13, '#e2d8ff', 'center');
       c.fillStyle = '#7b496f'; c.fillRect(330, 80, 300, 16);
       c.fillStyle = '#70dfbb'; c.fillRect(480 - game.cfg.balanceSafe * 150, 80, game.cfg.balanceSafe * 300, 16);
@@ -268,10 +302,11 @@
     }
     hint(game) {
       if (game.status !== 'playing' || game.mode === 'crash') return;
-      const next = game.objects.find(o => o.type !== 'crack' && o.x > game.worldX && o.x - game.worldX < Math.max(game.cfg.hintDistance, game.currentSpeed * 2));
+      const next = game.objects.find(o => o.type !== 'crack' && o.x > game.worldX && o.x - game.worldX < Math.max(game.cfg.hintDistance, game.currentSpeed * 2, o.minPrep || 0));
       let text = '';
       if (next) {
-        if (next.hint) text = next.hint + (next.intent === 'grind' ? ' · POP THEN HOLD ↑ · BALANCE ← →' : next.direction === 'down' ? ' · ROLL DOWN OR POP OFF' : ' · HOLD SPACE, RELEASE TO JUMP · ROLL ON TOP');
+        if (next.speedRequired) text = next.x - game.worldX > game.holdDistance(next) ? 'BOOST GAP · HOLD RIGHT TO 392 · THEN HOLD SPACE · RELEASE AT MARK' : `SPEED ${Math.round(game.currentSpeed)} · NEED 370+ · FULL CHARGE · RELEASE AT MARK`;
+        else if (next.hint) text = next.hint + (next.intent === 'grind' ? ' · POP THEN HOLD ↑ · BALANCE ← →' : next.direction === 'down' ? ' · ROLL DOWN OR POP OFF' : ' · HOLD SPACE, RELEASE TO JUMP · ROLL ON TOP');
         else if (next.type === 'rail') text = 'UP TO GRIND · POP THEN HOLD ↑ · BALANCE ← →';
         else if (next.type === 'low_bar') text = 'LOW BAR AHEAD · HOLD ↓ TO DUCK';
         else if (!next.charged) text = 'SMALL OBSTACLE · TAP SPACE';

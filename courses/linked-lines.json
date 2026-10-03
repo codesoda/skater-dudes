@@ -1,0 +1,31 @@
+{
+  "id": "linked-lines",
+  "name": "Linked Lines",
+  "version": 1,
+  "length": 19000,
+  "checkpoints": [0, 9600, 12400, 17000],
+  "practiceObjects": [
+    {"id":"practice-curb","type":"curb","x":1800,"width":30,"height":18,"laneY":0,"depth":38,"charged":false},
+    {"id":"practice-rail","type":"rail","x":3300,"width":180,"height":58,"laneY":0,"depth":32,"charged":true}
+  ],
+  "practiceCheckpoints": [0, 1400, 2800, 4200],
+  "objects": [
+    {"id":"linked-1","type":"ledge","x":1800,"width":3680,"height":60,"baseHeight":0,"charged":true,"intent":"ride","section":"linked-four-tier","minPrep":420,"hint":"STEP 1 OF 4"},
+    {"id":"linked-2","type":"ledge","x":2720,"width":2760,"height":120,"baseHeight":60,"charged":true,"intent":"ride","section":"linked-four-tier","minPrep":420,"hint":"STEP 2 OF 4"},
+    {"id":"linked-3","type":"ledge","x":3640,"width":1840,"height":180,"baseHeight":120,"charged":true,"intent":"ride","section":"linked-four-tier","minPrep":420,"hint":"STEP 3 OF 4"},
+    {"id":"linked-4","type":"ledge","x":4560,"width":920,"height":240,"baseHeight":180,"charged":true,"intent":"ride","section":"linked-four-tier","minPrep":420,"hint":"STEP 4 OF 4"},
+    {"id":"top-transfer","type":"gap","x":5480,"width":160,"height":0,"charged":true,"section":"linked-four-tier","minPrep":420,"hint":"240 TO 180 · CHARGED GAP"},
+    {"id":"three-tier-a","type":"ledge","x":5640,"width":1100,"height":180,"charged":false,"intent":"ride","section":"linked-four-tier","landingOnly":true},
+    {"id":"inner-transfer","type":"gap","x":6740,"width":150,"height":0,"charged":true,"section":"linked-four-tier","minPrep":420,"hint":"SAME HEIGHT · CHARGED GAP"},
+    {"id":"three-tier-b","type":"ledge","x":6890,"width":1110,"height":180,"charged":false,"intent":"ride","section":"linked-four-tier","landingOnly":true},
+    {"id":"shelf-rail","type":"rail","x":7440,"width":300,"height":220,"baseHeight":180,"charged":true,"intent":"grind","section":"linked-four-tier","minPrep":420,"hint":"RAIL ON LEDGE"},
+    {"id":"linked-down","type":"stairs","x":8000,"width":960,"height":160,"steps":8,"direction":"down","section":"linked-four-tier","hint":"STEP DOWN"},
+    {"id":"transfer-ledge","type":"ledge","x":10200,"width":1300,"height":60,"charged":true,"intent":"ride","section":"ledge-to-rail","minPrep":420,"hint":"RIDE THEN TRANSFER"},
+    {"id":"transfer-rail","type":"rail","x":11000,"width":500,"height":100,"baseHeight":60,"charged":true,"intent":"grind","section":"ledge-to-rail","minPrep":420,"hint":"LEDGE TO RAIL"},
+    {"id":"duck","type":"low_bar","x":12600,"width":100,"height":69.5,"thickness":8,"section":"last-links"},
+    {"id":"street-rail","type":"rail","x":13600,"width":400,"height":60,"charged":true,"intent":"grind","section":"last-links","minPrep":420},
+    {"id":"last-ledge","type":"ledge","x":14800,"width":1000,"height":60,"charged":true,"intent":"ride","section":"last-links","minPrep":420},
+    {"id":"last-shelf-rail","type":"rail","x":15350,"width":350,"height":100,"baseHeight":60,"charged":true,"intent":"grind","section":"last-links","minPrep":420},
+    {"id":"last-down","type":"stairs","x":15800,"width":240,"height":40,"steps":2,"direction":"down","section":"last-links"}
+  ]
+}

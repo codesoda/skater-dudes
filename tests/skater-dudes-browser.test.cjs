@@ -65,7 +65,7 @@ test('Skater Dudes offline chooser, retained identity and real Canvas body image
     assert.equal(await dedication.isVisible(), true);
     assert.equal(await dedication.evaluate(node => getComputedStyle(node).textTransform), 'none');
     assert.equal(await page.getByRole('group', { name: 'Choose your dude' }).count(), 1);
-    assert.equal(await page.getByRole('radio').count(), 2);
+    assert.equal(await page.getByRole('group', { name: 'Choose your dude' }).getByRole('radio').count(), 2);
     assert.equal(await page.getByRole('radio', { name: 'Jeff', exact: true }).isChecked(), true);
     assert.equal(await page.locator('input[name="dude"]:checked').count(), 1);
     for (const id of ['jeff', 'dave']) {
@@ -113,7 +113,7 @@ test('Skater Dudes offline chooser, retained identity and real Canvas body image
     await key(page, 'ArrowDown', 5); await key(page, 'ArrowUp', 5); await body(page, 'dave_flip');
     await page.waitForFunction(() => window.SHREDDER.game.mode === 'rolling');
     await page.waitForFunction(() => window.SHREDDER.game.score >= 180);
-    await clearDraws(page); await page.keyboard.down('ArrowUp'); await body(page, 'dave_manual'); await page.keyboard.up('ArrowUp');
+    await clearDraws(page); await page.keyboard.down('ArrowUp'); await body(page, 'dave_lean_back'); await page.keyboard.up('ArrowUp');
     await page.waitForFunction(() => window.SHREDDER.game.score > 180);
   });
 
@@ -172,7 +172,7 @@ test('Skater Dudes offline chooser, retained identity and real Canvas body image
       assert.equal(record.draws.length, 2, record.id + ':' + record.pose);
       assert.match(record.draws[0].key, /^board_/);
       assert.equal(imageHash(record.draws[0].src), fileHash(record.draws[0].key));
-      const body = record.draws[1], expected = manifest.characters[record.id].poses[record.pose];
+      const body = record.draws[1], expected = manifest.characters[record.id].poses[record.pose === 'manual' ? 'lean_back' : record.pose];
       assert.equal(body.key, expected); assert.equal(imageHash(body.src), fileHash(expected));
       assert.deepEqual(body.args, [-200 / 400 * (400 * 80 / 300), -292 / 300 * 80, 400 * 80 / 300, 80]);
       record.draws = record.draws.map(({ key, src, args }) => ({ key, sha256: imageHash(src), args }));

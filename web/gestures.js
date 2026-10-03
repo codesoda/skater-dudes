@@ -14,7 +14,8 @@
       this.stopCatch();
       this.contact = { x, y, at: this.now(), panned: false, tap: false,
         jump: this.game.mode === 'rolling', balance: this.game.balanceActive,
-        manual: false, direction: null, downY: null, turnY: null, downAt: -Infinity };
+        manual: false, direction: null, downY: null, turnY: null, downAt: -Infinity,
+        leftX: null, leftAt: -Infinity, turnX: null };
       if (this.contact.jump) this.input.feed('Space', true, false, HOLD);
       this.feedback(this.contact.jump ? 'Hold to load · release to pop · drag down to duck' : 'Air: down then up to flip · swipe up to catch');
     }
@@ -29,25 +30,30 @@
     pan(x, y) {
       const c = this.contact;
       if (!c || !this.active) return;
-      const dx = x - c.x, dy = y - (c.turnY ?? c.y);
+      const dx = x - (c.turnX ?? c.x), dy = y - (c.turnY ?? c.y);
       if (!c.panned && Math.hypot(dx, dy) <= SLOP) return;
       c.panned = true; this.input.cancelSource(HOLD);
       const g = this.game, horizontal = Math.abs(dx) > Math.abs(dy);
       if (g.balanceActive) c.balance = true;
       // Track a downward stroke's turning point, not only its original origin.
       // This lets Down -> Up win before the end-only Swipe recognizer fires.
-      const reversal = g.mode === 'air' && c.downY !== null &&
+      const reversal = g.mode === 'air' && !g.flip && c.downY !== null &&
         this.now() - c.downAt <= 400 && c.downY - y > SLOP;
       if (reversal) {
-        c.turnY = c.downY; c.downY = null; c.manual = false; this.direction('ArrowUp');
+        c.turnY = c.downY; c.downY = null; c.leftX = null; c.manual = false; this.direction('ArrowUp');
         this.catchUntil = g.time + CATCH_SECONDS;
         c.direction = 'flip'; this.feedback('Kickflip · drag left / right to balance'); return;
       }
       if (Math.hypot(dx, dy) <= SLOP) {
-        this.direction(null); c.direction = null; return;
+        this.direction(null); c.direction = null; c.leftX = null; c.downY = null; return;
+      }
+      if (g.mode === 'air' && !g.flip && !c.balance && c.leftX !== null &&
+          this.now() - c.leftAt <= 400 && x - c.leftX > SLOP) {
+        c.turnX = c.leftX; c.leftX = null; c.downY = null; this.direction('ArrowRight');
+        c.balance = true; c.direction = 'tre'; this.feedback('Tre flip · drag left / right to balance'); return;
       }
       if (!horizontal && dy > SLOP) {
-        c.manual = false; this.stopCatch(); this.direction('ArrowDown');
+        c.manual = false; c.leftX = null; this.stopCatch(); this.direction('ArrowDown');
         if (c.direction !== 'down') { c.downAt = this.now(); c.downY = y; }
         else c.downY = Math.max(c.downY, y);
         c.direction = 'down'; this.feedback(g.mode === 'air' ? 'Drag up now to kickflip' : 'Duck · release to stand (no jump)');
@@ -59,6 +65,11 @@
         } else this.direction(c.manual ? 'ArrowUp' : null);
         c.direction = 'up'; this.feedback(c.manual ? 'Manual · drag sideways to balance · release to end' : 'Catch window · drag sideways in tricks to balance');
       } else if (horizontal && Math.abs(dx) > SLOP) {
+        if (g.mode === 'air' && !g.flip && !c.balance && dx < -SLOP && c.downY === null) {
+          if (c.direction !== 'left') { c.leftAt = this.now(); c.leftX = x; this.direction('ArrowLeft'); }
+          else c.leftX = Math.min(c.leftX, x);
+          c.direction = 'left'; this.feedback('Reverse right now to tre flip'); return;
+        }
         const plain = g.mode === 'rolling' && g.jumpZ === 0 && !g.surface;
         this.direction(c.balance && g.balanceActive ? dx > 0 ? 'ArrowRight' : 'ArrowLeft' :
           !c.balance && plain && dx > 0 ? 'ArrowRight' : null);
@@ -92,7 +103,7 @@
       if (this.contact && this.game.balanceActive) this.contact.balance = true;
       // A balance hold must never turn into a boost after landing or dropping.
       const plain = this.game.mode === 'rolling' && this.game.jumpZ === 0 && !this.game.surface;
-      if (!this.game.balanceActive && (this.contact?.balance || !plain)) {
+      if (!this.game.balanceActive && (this.contact?.balance || !plain && this.contact?.direction !== 'left')) {
         this.input.feed('ArrowLeft', false, false, DRAG); this.input.feed('ArrowRight', false, false, DRAG);
       }
     }

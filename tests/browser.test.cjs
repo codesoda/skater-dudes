@@ -44,7 +44,12 @@ async function observe(page) {
       if (/^(skater_|dave_|board_)/.test(key)) qa.poses.push({ key, mode: game.mode, at: game.time });
       if (/^(skater_|dave_)/.test(key)) {
         const body = renderer.data.images[key];
-        qa.bodyTop = renderer.ctx.getTransform().f + args[1] - body.anchor[1] * body.drawHeight / body.height;
+        const transform = renderer.ctx.getTransform();
+        const left = args[0] - body.anchor[0] * body.drawWidth / body.width;
+        const top = args[1] - body.anchor[1] * body.drawHeight / body.height;
+        // Measure all transformed bitmap corners, including the manual's deck-aligned shear.
+        qa.bodyTop = Math.min(...[left, left + body.drawWidth].flatMap(x =>
+          [top, top + body.drawHeight].map(y => transform.b * x + transform.d * y + transform.f)));
       }
       return sprite(key, ...args);
     };

@@ -129,7 +129,7 @@ class ExportTests(unittest.TestCase):
     def test_complete_standalone_build_uses_only_its_local_vendor_and_assets(self):
         with tempfile.TemporaryDirectory(prefix='skater-dudes-offline-') as tmp:
             root = Path(tmp)
-            for folder in ('assets', 'web', 'vendor'):
+            for folder in ('assets', 'web', 'vendor', 'courses'):
                 shutil.copytree(ROOT / folder, root / folder)
             for name in ('settings.json', 'course.json'):
                 shutil.copyfile(ROOT / name, root / name)
@@ -137,6 +137,26 @@ class ExportTests(unittest.TestCase):
             (root / 'vendor/zingtouch/zingtouch.min.js').unlink()
             with self.assertRaises(FileNotFoundError):
                 BUILD.assemble(root)
+
+    def test_catalog_and_invalid_course_geometry(self):
+        self.assertEqual([entry['id'] for entry in self.data['courses']], ['night-shift', 'linked-lines', 'gap-attack'])
+        self.assertEqual(self.data['courses'][0]['course'], self.data['course'])
+        for index, identifier in enumerate(('linked-lines', 'gap-attack'), 1):
+            self.assertEqual(self.data['courses'][index]['course'], json.loads((ROOT/'courses'/(identifier+'.json')).read_text()))
+        for change in ('duplicate', 'bounds', 'order', 'support', 'identity', 'runup'):
+            with self.subTest(change=change), tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp)
+                shutil.copytree(ROOT/'courses', root/'courses')
+                path = root/'courses/linked-lines.json'
+                course = json.loads(path.read_text())
+                if change == 'duplicate': course['objects'][1]['id'] = course['objects'][0]['id']
+                if change == 'bounds': course['objects'][0]['width'] = float('inf')
+                if change == 'order': course['objects'][1]['x'] = 0
+                if change == 'support': course['objects'][0]['width'] += 100
+                if change == 'identity': course['id'] = '../outside'
+                if change == 'runup': course['objects'][4].update(speedRequired=True, minPrep=100)
+                path.write_text(json.dumps(course))
+                with self.assertRaises(ValueError): BUILD.courses(root, self.data['course'])
 
     def test_production_path_validation(self):
         for bad in ("references/paperboy/example.png", "assets/processed/../../references/example.png"):

@@ -71,7 +71,7 @@ test('all 12 Jeff and Dave pose fixtures draw the selected body with exactly one
       const draws = calls.filter(call => call[0] === 'drawImage');
       assert.equal(draws.length, 2, id + ':' + pose);
       assert.match(draws[0][1].key, /^board_/);
-      assert.equal(draws[1][1].key, manifest.characters[id].poses[pose]);
+      assert.equal(draws[1][1].key, manifest.characters[id].poses[pose === 'manual' ? 'lean_back' : pose]);
       assert.equal(draws[1][4], manifest.images.skater_roll.drawWidth);
       assert.equal(draws[1][5], 80);
     }
@@ -211,7 +211,8 @@ test('compact manual and grind panels follow both bodies at street and elevated 
       renderer.skater(game, game.cfg.playerScreenX, game.cfg.baselineY + laneY - jumpZ, renderer.groundY(game, laneY));
       const feet = calls.find(c => c[0] === 'translate')[2];
       const body = calls.filter(c => c[0] === 'drawImage').at(-1);
-      const bodyTop = feet + body[3];
+      const stance = renderer.manualStance(game);
+      const bodyTop = feet + body[3] + (mode === 'manual' ? stance.offset + stance.slope * (body[2] + body[4]) : 0);
       calls.length = 0; renderer.meters(game);
       const rects = calls.filter(c => c[0] === 'fillRect'), [panel, track] = rects;
       assert.equal(rects.length, 4); assert.deepEqual(panel.slice(3), [180, 56]);
@@ -259,7 +260,8 @@ test('render forwards interpolated feet so compact balance stays eight pixels ab
     const feet = calls.find(c => c[0] === 'translate')[2];
     const body = calls.filter(c => c[0] === 'drawImage').at(-1);
     const panel = calls.find(c => c[0] === 'fillRect' && c[3] === 180 && c[4] === 56);
-    close(panel[2] + 64, feet + body[3]);
+    const stance = renderer.manualStance(game);
+    close(panel[2] + 64, feet + body[3] + (mode === 'manual' ? stance.offset + stance.slope * (body[2] + body[4]) : 0));
   }
 });
 test('compact panel clamps inside the canvas at extreme fixture positions', () => {

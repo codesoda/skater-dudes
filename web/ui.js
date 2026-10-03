@@ -43,6 +43,7 @@
           ['DRAG RIGHT', 'Hold on plain street to build speed; release to coast.'],
           ['DRAG UP', 'Hold on ground for a manual. In air, swipe up for a short rail-catch window.'],
           ['DOWN → UP IN AIR', 'Reverse your finger upward within 400 ms to kickflip, without lifting.'],
+          ['LEFT → RIGHT IN AIR', 'During an ollie, stroke left then reverse right within 400 ms without lifting for a tre flip. Start early.'],
           ['LEFT / RIGHT IN TRICKS', 'Drag sideways to balance a manual, flip or grind. Return near your starting point for neutral.'],
           ['PAUSE / CANCEL', 'Toolbar buttons stay available. Pause, leaving the game area, a second finger or a canceled touch abandons the hold without jumping.']
         ]) touch.append(element('dt', '', action), element('dd', '', meaning));
@@ -53,6 +54,7 @@
         ['TAP SPACE', 'Release before 300 ms for a small ollie. No crouch or charge gauge.'],
         ['HOLD → RELEASE', 'Hold 300 ms to crouch and show the left gauge, then charge for 600 ms more. Full pop takes 900 ms; release to jump.'],
         ['↓ THEN ↑', 'Kickflip in the air. Start early; finish the flip before you land.'],
+        ['← THEN → IN AIR', 'During an ollie, press fresh Left then Right within 400 ms for a 360 tre flip. Allow 550 ms to finish.'],
         ['HOLD ↑', 'Manual on the ground. Catch a rail or ledge from above in the air.'],
         ['HOLD →', 'Build speed on flat street. Release to coast. Space, Down and tricks stop acceleration.'],
         ['← / → IN TRICKS', 'Balance only: steer the white needle into the mint safe zone.'],
@@ -88,6 +90,18 @@
         state.textContent = radio.checked ? 'Selected' : 'Choose';
       }
     }
+    chooseCourses(parent, game) {
+      const group = element('fieldset', 'course-chooser');
+      group.append(element('legend', '', 'Choose your level'));
+      for (const [index, entry] of game.courses.entries()) {
+        const label = element('label', 'course-card'), radio = element('input');
+        radio.type = 'radio'; radio.name = 'course'; radio.value = entry.id; radio.checked = entry.id === game.courseId;
+        radio.setAttribute('aria-label', `Level ${index + 1}: ${entry.course.name}`);
+        radio.addEventListener('change', () => { if (radio.checked) this.action('course:' + entry.id); });
+        label.append(radio, document.createTextNode(`Level ${index + 1}: ${entry.course.name}`)); group.append(label);
+      }
+      parent.append(group);
+    }
     makePanel(game) {
       this.panel.replaceChildren(); this.choices = [];
       const content = element('div', 'panel-content'); this.panel.append(content);
@@ -102,31 +116,31 @@
           element('p', 'lead', 'Find your line. Stick the landing.'),
           element('p', 'description', 'A side-on skate run through the late shift. Build a combo, balance it, bank it. Bail? Retry after a cleared obstacle, with room to prepare.'));
         intro.append(element('p', 'dedication', 'Dedicated to Oscar, the raddest skater dude I know'));
-        this.chooseCharacters(intro, game);
+        this.chooseCharacters(intro, game); this.chooseCourses(intro, game);
         const buttons = element('div', 'menu-buttons');
         buttons.append(this.button('Ride the street  ↗', 'route', true), this.button('Practice first', 'practice'));
         intro.append(buttons);
         const label = element('label', 'practice-option'), check = element('input'); check.type = 'checkbox'; check.checked = this.challenges;
         check.addEventListener('change', () => { this.challenges = check.checked; });
         label.append(check, document.createTextNode(' Add a curb and rail to practice')); intro.append(label);
-        intro.append(element('p', 'fineprint', '90 seconds at base speed · 32 hazards · infinite attempts · headphones welcome'));
+        intro.append(element('p', 'fineprint', `${Math.round(game.course.length / game.cfg.speed)} seconds at base speed · ${game.course.objects.filter(o => o.type !== 'crack').length} obstacles · infinite attempts · headphones welcome`));
         guide.append(element('div', 'eyebrow', 'THE HOLD-RELEASE POP'), element('h2', '', 'Hold. Let go. Pop.'),
           element('p', '', this.touch ? 'One finger anywhere on the game: tap and release for a small ollie. Hold still, then release for height. No screen zones or buttons.' : 'A quick tap makes a small ollie. For more height, hold Space, then release it to jump.'),
           element('div', 'pop-steps', 'HOLD 900 ms  →  RELEASE TO POP'),
           element('p', 'callout', 'Roll for the first 300 ms. Then crouch and charge for 600 ms more: 900 ms total. Keep holding until the RELEASE mark.'),
-          element('p', 'fineprint', 'Down → Up: kickflip · Hold Up: manual / grind\nHold Right: build speed on street · Hold Down: duck\nLeft / Right in tricks: balance only · I: all controls'));
+          element('p', 'fineprint', 'Down → Up: kickflip · Left → Right in air: tre flip\nHold Up: manual / grind · Hold Right: street speed\nLeft / Right in tricks: balance only · I: all controls'));
         if (this.touch) guide.append(element('p', 'callout', 'Drag down and hold: duck, no jump. Right: speed. Up: manual / air catch. Down then up in air: flip. Sideways in tricks: balance.'),
           element('p', 'fineprint', 'Portrait works. Turn sideways for a wider street view. Controls above has the full gesture guide.'));
         content.append(intro, guide); return;
       }
       if (game.status === 'finished' && !this.help) {
-        content.append(element('div', 'eyebrow', 'THE NIGHT SHIFT / COMPLETE'), element('h1', '', 'LINE FINISHED.'),
+        content.append(element('div', 'eyebrow', game.course.name + ' / COMPLETE'), element('h1', '', 'LINE FINISHED.'),
           element('p', 'summary-score', Math.round(game.score).toLocaleString() + ' BANKED'),
-          element('p', '', `Best combo ${Math.round(game.bestCombo).toLocaleString()} · ${game.bails} bails · 2.52 km of street`));
+          element('p', '', `Best combo ${Math.round(game.bestCombo).toLocaleString()} · ${game.bails} bails · ${(game.course.length / 10000).toFixed(2)} km of street`));
         const buttons = element('div', 'menu-buttons'); buttons.append(this.button('Run it again', 'restart', true), this.button('Flat practice', 'practice'), this.button('Choose dude', 'choose-dude'));
         content.append(buttons); return;
       }
-      content.append(element('div', 'eyebrow', game.practice ? 'FLAT PRACTICE / NO PRESSURE' : 'THE NIGHT SHIFT'), element('h1', '', this.help ? 'SKATER DUDES / CONTROLS' : 'TAKE A BREATHER.'));
+      content.append(element('div', 'eyebrow', game.practice ? 'FLAT PRACTICE / ' + game.course.name : game.course.name), element('h1', '', this.help ? 'SKATER DUDES / CONTROLS' : 'TAKE A BREATHER.'));
       if (this.help) {
         this.controls(content);
         content.append(element('p', 'fineprint', 'Release Space to jump. Full charge stays full while held, with no automatic jump. Landing while holding Space never jumps again. Pause or focus loss cancels charge. Normal ollies need no balancing.'));
@@ -139,19 +153,20 @@
       content.append(buttons);
     }
     update(game) {
+      document.querySelector('.edition').textContent = game.course.name + ' / V.01';
       this.score.textContent = Math.round(game.score).toLocaleString();
       this.combo.textContent = game.combo ? `${Math.round(game.combo)} × ${game.multiplier}` : '—';
-      this.stats.textContent = `${game.practice ? 'PRACTICE' : (game.worldX / 10000).toFixed(2) + ' / 2.52 km'} · ${game.bails} BAILS`;
+      this.stats.textContent = `${game.course.name} · ${game.practice ? 'PRACTICE' : (game.worldX / 10000).toFixed(2) + ' / ' + (game.course.length / 10000).toFixed(2) + ' km'} · ${game.bails} BAILS · SPEED ${Math.round(game.currentSpeed)}`;
       this.trick.textContent = game.combo ? game.trick : 'ROLL CLEAN TO BANK';
       const show = game.status !== 'playing' || !!this.loading;
       this.panel.hidden = !show; this.hud.hidden = game.status === 'menu' || !!this.loading;
       this.host.classList.toggle('live-play', !show && game.mode !== 'crash');
       this.gestureHint.hidden = !this.touch || show;
       this.gestureHint.textContent = this.gestureMessage || (game.balanceActive ? 'Drag left / right to balance · down to exit' :
-        game.mode === 'air' ? 'Down → up: flip · swipe up: catch' : 'Tap: ollie · hold: charge · ↓ duck · → speed · ↑ manual');
-      const key = game.status + ':' + this.help + ':' + this.loading;
+        game.mode === 'air' ? 'Down → up: kickflip · left → right: tre · swipe up: catch' : 'Tap: ollie · hold: charge · ↓ duck · → speed · ↑ manual');
+      const key = game.status + ':' + this.help + ':' + this.loading + ':' + game.courseId;
       if (show && key !== this.lastPanel) { this.makePanel(game); this.lastPanel = key; }
-      const status = game.status === 'playing' ? game.practice ? 'Practice · rolling' : 'The night shift · rolling' : game.status;
+      const status = game.status === 'playing' ? game.practice ? 'Practice · rolling' : game.course.name + ' · rolling' : game.status;
       if (this.status.textContent !== status) this.status.textContent = status;
       document.getElementById('pause-button').textContent = game.status === 'paused' ? 'Resume / P' : 'Pause / P';
     }

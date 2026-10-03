@@ -6,6 +6,8 @@ An original, side-on **Double Dragon-style belt-scrolling skate prototype**. V1 
 
 Play: **https://codesoda.github.io/skater-dudes/**
 
+The live site still serves the older deployment `a989013`. The features below are local and pending publication, blocked by the quality gate.
+
 Source: https://github.com/codesoda/skater-dudes
 
 For offline play, build locally using the steps below, then double-click **`index.html`**.
@@ -16,9 +18,11 @@ The start screen says: **Dedicated to Oscar, the raddest skater dude I know**
 
 Choose **Jeff** or **Dave** before starting. Jeff is selected by default. Jeff wears an orange helmet and purple hoodie. Dave wears a teal helmet and coral hoodie. Both have identical physics, tricks, boards and sound. Click a named sprite card, or Tab to the radio group and use Arrow keys or Space. Native menu controls do not trigger gameplay.
 
-**Choose dude** on the pause, controls or result screen returns to this menu without reloading. It stops audio and clears held keys and charge. The menu keeps your last choice and banked score. Starting Route or Practice begins a new run and resets the score. R, mode switches, help, pauses and safe retries keep your selected dude. Selection changes only in the menu.
+**Choose dude** on the pause, controls or result screen returns to this menu without reloading. It stops audio and clears held keys and charge. The menu keeps your selected level, dude and banked score. Starting Route or Practice begins a new run and resets the score. Restart, Practice, help, pause, safe retries and menu return keep your selected level and dude. Selection changes only in the menu.
 
-Choose **Practice first** to learn on an empty street. The menu checkbox adds a curb and rail. Practice repeats without a timer. **Ride the street** starts a 2.52 km route with 44 objects: 29 meaningful hazards and 15 cracks. It takes 90 seconds at base speed, or less with deliberate speed-building sections. Three concrete jersey barriers need a charged pop. Four overhead bars need Hold Down; their supports sit outside the skating line. Bails retry just past a successfully cleared obstacle. Short spacing uses an earlier cleared obstacle or the start, leaving at least 1.4 seconds before the next obstacle. Failed hazards are never skipped. Banked points stay; the current combo is lost. A clean run ends with results.
+Choose a level with the native menu selector: **The Night Shift** (original, 2.52 km), **Linked Lines** (1.90 km), or **Gap Attack** (2.20 km). The run title and distance follow the selected course.
+
+Choose **Practice first** to learn on an empty street. The menu checkbox adds a curb and rail. Practice repeats without a timer. **Ride the street** starts the selected route. The Night Shift has 44 objects: 29 meaningful hazards and 15 cracks. It takes 90 seconds at base speed, or less with deliberate speed-building sections. Three concrete jersey barriers need a charged pop. Four overhead bars need Hold Down; their supports sit outside the skating line. Bails retry just past a successfully cleared obstacle. Short spacing uses an earlier cleared obstacle or the start, leaving at least 1.4 seconds before the next obstacle. Failed hazards are never skipped. Banked points stay; the current combo is lost. A clean run ends with results.
 
 Small screens show scrollable menus and a scaled 16:9 game. **Keyboard and one-finger phone gestures both work.** Portrait works; landscape gives a wider street view. There is no virtual direction pad or overlay button grid.
 
@@ -29,6 +33,7 @@ Small screens show scrollable menus and a scaled 16:9 game. **Keyboard and one-f
 | Quick Space tap | Release before 300 ms for a small ollie. No crouch or charge gauge. |
 | Hold Space → release | Hold 300 ms for crouch intent, then charge for 600 ms more. Full pop takes 900 ms. Jump immediately on release. |
 | Down, then Up within 400 ms | Kickflip in the air. Start early enough to finish before landing. |
+| Fresh Left → Right within 400 ms in a plain ollie | Tre flip: 550 ms rotation, 360 points. Use charged airtime and leave 0.55 seconds to finish. |
 | Hold Up on ground | Manual. Release Up or press Down to end it. |
 | Up in air without fresh flip intent | Catch a rail or ledge from above while descending. |
 | Hold Right on flat street | Build speed from 280 to 392 px/s. Release to coast to normal over about 8 seconds; grinds take about 4 seconds. |
@@ -54,6 +59,7 @@ Use one finger anywhere on the live canvas, including behind the score display. 
 | Drag up and hold on ground | Manual. Move sideways with the same finger to balance; release to end. |
 | Swipe up in air | A bounded 350 ms rail-catch window, not a latched key. |
 | Down → up reversal in air within 400 ms | Kickflip before lifting your finger. Flip intent wins over rail catch. |
+| Fresh left → right reversal in a plain ollie within 400 ms | Tre flip before lifting your finger, even before crossing the original touch point. Leave 550 ms to finish. |
 | Drag left / right during a flip, manual or grind | Continuous balance only, never boost. Return near the gesture origin for neutral. |
 
 A hold that becomes a drag abandons its pending jump without releasing another input source. Physical keyboard keys and touch controls can overlap. Airborne stationary touches never queue a jump for landing. Pause, help, menu, restart, bail, focus loss, orientation changes, leaving the play area, a canceled touch or a second finger cancels touch input without popping. Start a fresh contact afterward. The toolbar stays native and accessible; scrolling and zoom remain normal outside the live canvas. Touch devices show a first-play gesture guide and contextual helper text. All keyboard mappings below remain available, including Space to pop off a grind.
@@ -71,13 +77,17 @@ Cancel:           pause/help, blur/visibility loss, bail, menu or restart clears
 Space held in air: no automatic jump on landing; release before a new gesture.
 ```
 
-Manuals and grinds show a compact horizontal balance meter **directly above the skater**, following the skater's height. Kickflips keep the larger **top-center** balance meter and rotation progress. Ordinary ollies do not require balance. Manual/grind balance has a 240 ms unsafe-zone grace period. An unfinished or unbalanced flip fails at landing, not in mid-air. Down→Up has priority over rail catching. F does nothing.
+Manuals use existing two-feet lean poses aligned with the tilted board, with the rear wheel touching the ground. Manuals and grinds show a **180×56 px** balance panel **8 px above the body**, following its height. Kickflips and tre flips keep the larger **top-center** balance meter and rotation progress. Both keyboard and phone tre inputs use a fresh airborne reversal, not ground Right or manual/grind balance corrections. Ordinary ollies do not require balance. Manual/grind balance has a 240 ms unsafe-zone grace period. An unfinished or unbalanced flip fails at landing, not in mid-air. Down→Up has priority over rail catching. F does nothing.
 
 Jersey barriers, charged stairs and gaps need the extra pop. Jersey barriers are solid concrete, not cones, and are not grindable. Pavement HOLD/RELEASE marks and the live helper show the approach. Hold Space at HOLD, then release at RELEASE. HOLD uses current speed to allow 900 ms to load plus a 200 ms reaction margin. Space suppresses acceleration immediately, even during the first 300 ms. Airborne momentum coasts gradually; Right only balances during tricks. The full route uses this single hold-release gesture. The automated controller has exact state feedback; that does not prove the timing feels forgiving to a new player.
 
 ## Elevated concrete lines
 
-The four-tier line starts at 9,980 px. Each new shelf starts 920 px after the last.
+**Linked Lines** links a four-tier, 240 px top to a three-tier-height, 180 px landing across a gap. Another gap joins two 180 px tops. Rails stand on the ledges: ride the concrete, then pop and hold Up to catch them.
+
+**Gap Attack** adds two 300 px speed-only gaps to its linked high line. Use each 1,800 px run-up to reach 392 px/s, then fully charge. Release 30 px before the edge; the helper calls for **370+ px/s at release**. Normal-speed full-charge jumps cannot clear these gaps.
+
+On **The Night Shift**, the four-tier line starts at 9,980 px. Each new shelf starts 920 px after the last.
 The tops sit at 60, 120, 180 and 240 px. Lower blocks continue under the upper blocks.
 Land without Up to **ride** a ledge. Release Space after each landing, then start a fresh 900 ms charge.
 Each higher shelf needs another jump. The game never jumps for you.
@@ -94,7 +104,7 @@ Space pops off; Down drops through that rail without catching it again.
 
 **RIDE LEDGE**, **UP NEXT STEP**, **UP TO GRIND** and **STAIRS DOWN** identify the line.
 Grinds use the selected dude's arms-out stance, hanging wheels, sparks and a brief **50-50 LOCKED** cue.
-The compact balance meter follows the skater above elevated rails and ledges. Kickflip balance stays at the top center. A quiet contact clack and steel scrape distinguish grinding from riding.
+The compact balance meter follows the skater above elevated rails and ledges. Kickflip and tre balance stay at the top center. A quiet contact clack and steel scrape distinguish grinding from riding.
 A failed tier retries before the complex, never inside a concrete block. Banked score and dude choice stay intact.
 
 ## Rebuild and test
@@ -147,7 +157,7 @@ The adapter uses ZingTouch's built-in Tap, Pan and Swipe recognizers and a custo
 - **Original source art:** `assets/source/skater-sheet.png`, `street-sheet.png`, `city.png`, and the approved `obstacles-sheet.png`.
 - **Parent generation prompt summary:** GPT-6 Astra; crisp 16-bit pixel art; a boardless skater 4×4 sheet with separate skateboard cells, a street-prop 4×4 sheet, and a wide city backdrop. No new image generation occurs during this integration.
 - **Characters:** `assets/characters.json` defines Jeff and Dave, all 12 body pose keys and preview keys. The builder embeds these definitions. `game.characterId` is the single validated, read-only runtime selection; only the menu selection method changes it.
-- **Dave skin:** a deterministic local HSV clothing remap of the approved Jeff PNGs. It changes saturated orange helmet pixels to teal and purple cloth to coral. It preserves alpha, dimensions, padding, anchors, baseline and board separation. No new image generation, paid service or external art is used. The crop map records each derived source and output hash; provenance records the processor hash. All 45 existing runtime PNGs, their anchors, all existing source PNGs, music/events, rolling and the six one-shot WAVs retain their bytes. This elevated-line update changes only the grind WAV and course pins. The score, other eight WAVs, music events, characters and all art remain unchanged.
+- **Dave skin:** a deterministic local HSV clothing remap of the approved Jeff PNGs. It changes saturated orange helmet pixels to teal and purple cloth to coral. It preserves alpha, dimensions, padding, anchors, baseline and board separation. No new image generation, paid service or external art is used. The crop map records each derived source and output hash; provenance records the processor hash. This linked-level update preserves all 49 runtime PNGs and nine WAVs, source art, anchors, characters, music events, settings and the original course.
 - **Processing and coordinates:** `scripts/prepare_assets.py`, `assets/crop-map.json`, `assets/ART_NOTES.md`.
 - **Production manifest and source hashes:** `assets/manifest.json`. There are 49 PNGs (33 original exports, 12 Dave poses and four approved obstacle sprites) and nine original WAVs. Export changes `path` to embedded `src` while preserving dimensions, bitmap anchors, contact metadata, gains and loop bounds.
 - **Original music:** “Sidewalk Pocket,” simple hip-hop, four bars, 90 BPM, 10.666667 seconds. Kick, snare, closed hats and sparse E2 bass repeat with 22 ms offbeat swing. Music uses runtime gain 0.30; its WAV and 56 events remain unchanged. Original score and procedural instruments by the Skater Dudes asset pipeline; no sampled recordings or adapted commercial songs.
@@ -162,7 +172,11 @@ Sound starts only after play and a user gesture. A single music loop persists wh
 
 ## Playtest status and open questions
 
-The current coast-tuning evidence is in `tests/artifacts/coast-tuning/validation.json`. Earlier elevated-line evidence is in `tests/artifacts/elevated-lines-grinds/validation.json`. It records exact test counts, scan results, preserved hashes and screenshots. Core controllers clear the full route at base speed in 90 seconds. The normal-clock browser controller uses trusted keys for an opening boost/coast, charged pops, all four duck bars, flips and grinds, then banks and finishes without teleports. All 49 images embed in both identical offline exports.
+Current local evidence is in `tests/artifacts/linked-levels/validation.json`: **310 tests passed** (58 Python, 252 Node), with no failures or skips. Trusted keyboard input completes both new full routes without bails. Chromium phone emulation verifies menu selection and tre gestures, not full new-course phone traversal. No actual phone hardware test has occurred.
+
+**Publication is blocked:** `npm run scan` fails despite a score of **99/100** (required 95) and all five engines completing. npm audit reports three high findings through `aislop → micromatch → braces@3.0.3` (`GHSA-vfj7-8cjw-p6xm`). The observed latest braces release is 3.0.3; no fixed release is available in the recorded evidence. No audit waiver, suppression or gate change is applied.
+
+Earlier coast-tuning evidence is in `tests/artifacts/coast-tuning/validation.json`. Earlier elevated-line evidence is in `tests/artifacts/elevated-lines-grinds/validation.json`. It records exact test counts, scan results, preserved hashes and screenshots. Core controllers clear the full route at base speed in 90 seconds. The normal-clock browser controller uses trusted keys for an opening boost/coast, charged pops, all four duck bars, flips and grinds, then banks and finishes without teleports. All 49 images embed in both identical offline exports.
 
 Gaps use fixed-size broken asphalt endcaps anchored at the collision edges and a repeated cutaway center. The final center tile is cropped, not stretched. The cutaway stays about 58 pixels deep below the street. The generated original remains unchanged; `assets/crop-map.json` records region bounds, normalization and the narrow repeat-seam repair. No new art generation runs.
 See `tests/artifacts/skater-dudes/` for title, chooser and Jeff/Dave gameplay screenshots. `tests/artifacts/route.json` holds the real-time browser traversal evidence. Route and obstacle gameplay screenshots use normal runs, not teleports. `pose-fixtures.json` explicitly labels the isolated 24-pose Canvas fixtures. A result-screen fixture tests menu return without claiming another full traversal. Other explicit fixtures cover audio failures, image failures and a burst of sound cues. Some headless browsers need a synthetic blur event; `focus-evidence.json` states whether that fallback was used.

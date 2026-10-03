@@ -1,0 +1,31 @@
+{
+  "id": "gap-attack",
+  "name": "Gap Attack",
+  "version": 1,
+  "length": 22000,
+  "checkpoints": [0, 9500, 13000, 17000, 20500],
+  "practiceObjects": [
+    {"id":"practice-curb","type":"curb","x":1800,"width":30,"height":18,"laneY":0,"depth":38,"charged":false},
+    {"id":"practice-rail","type":"rail","x":3300,"width":180,"height":58,"laneY":0,"depth":32,"charged":true}
+  ],
+  "practiceCheckpoints": [0, 1400, 2800, 4200],
+  "objects": [
+    {"id":"attack-1","type":"ledge","x":1800,"width":3680,"height":60,"baseHeight":0,"charged":true,"intent":"ride","section":"attack-high-line","minPrep":420,"hint":"STEP 1 OF 4"},
+    {"id":"attack-2","type":"ledge","x":2720,"width":2760,"height":120,"baseHeight":60,"charged":true,"intent":"ride","section":"attack-high-line","minPrep":420,"hint":"STEP 2 OF 4"},
+    {"id":"attack-3","type":"ledge","x":3640,"width":1840,"height":180,"baseHeight":120,"charged":true,"intent":"ride","section":"attack-high-line","minPrep":420,"hint":"STEP 3 OF 4"},
+    {"id":"attack-4","type":"ledge","x":4560,"width":920,"height":240,"baseHeight":180,"charged":true,"intent":"ride","section":"attack-high-line","minPrep":420,"hint":"STEP 4 OF 4"},
+    {"id":"attack-top-gap","type":"gap","x":5480,"width":170,"height":0,"charged":true,"section":"attack-high-line","minPrep":420,"hint":"STEP DOWN GAP"},
+    {"id":"attack-three-a","type":"ledge","x":5650,"width":1100,"height":180,"intent":"ride","landingOnly":true,"section":"attack-high-line"},
+    {"id":"attack-inner-gap","type":"gap","x":6750,"width":160,"height":0,"charged":true,"section":"attack-high-line","minPrep":420,"hint":"LINKED HIGH GAP"},
+    {"id":"attack-three-b","type":"ledge","x":6910,"width":1090,"height":180,"intent":"ride","landingOnly":true,"section":"attack-high-line"},
+    {"id":"attack-shelf-rail","type":"rail","x":7460,"width":300,"height":220,"baseHeight":180,"charged":true,"intent":"grind","section":"attack-high-line","minPrep":420,"hint":"RAIL ON LEDGE"},
+    {"id":"attack-down","type":"stairs","x":8000,"width":960,"height":160,"steps":8,"direction":"down","section":"attack-high-line"},
+    {"id":"speed-gap-1","type":"gap","x":11000,"width":300,"height":0,"charged":true,"popDistance":30,"speedRequired":true,"minPrep":1800,"section":"boost-one","hint":"BOOST RUN-UP · RIGHT TO 392 · FULL CHARGE"},
+    {"id":"attack-duck","type":"low_bar","x":12300,"width":100,"height":69.5,"thickness":8,"section":"boost-one"},
+    {"id":"speed-gap-2","type":"gap","x":15000,"width":300,"height":0,"charged":true,"popDistance":30,"speedRequired":true,"minPrep":1800,"section":"boost-two","hint":"BOOST RUN-UP · RIGHT TO 392 · FULL CHARGE"},
+    {"id":"attack-transfer-ledge","type":"ledge","x":17300,"width":1300,"height":60,"charged":true,"intent":"ride","section":"attack-finish","minPrep":420,"hint":"LAST LINK · RIDE"},
+    {"id":"attack-transfer-rail","type":"rail","x":18200,"width":350,"height":100,"baseHeight":60,"charged":true,"intent":"grind","section":"attack-finish","minPrep":420,"hint":"LAST LINK · CATCH"},
+    {"id":"attack-last-down","type":"stairs","x":18600,"width":240,"height":40,"steps":2,"direction":"down","section":"attack-finish"},
+    {"id":"attack-last-barrier","type":"jersey_barrier","x":20100,"width":160,"height":76,"charged":true,"section":"attack-finish","minPrep":420}
+  ]
+}

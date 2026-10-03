@@ -435,6 +435,16 @@ footer {
   }
 }
 /* Native radios keep browser keyboard behavior; the checked card is also labeled. */
+.course-chooser {
+  margin:16px 0;
+  padding:10px;
+  border:1px solid #677389;
+  border-radius:8px;
+}
+.course-chooser legend { font-weight:750; }
+.course-card { display:flex; align-items:center; gap:10px; min-height:44px; cursor:pointer; }
+.course-card:has(input:checked) { color:#8cebd3; }
+.course-card input { accent-color:#8cebd3; }
 .dude-chooser {
   border:0;
   padding:0;

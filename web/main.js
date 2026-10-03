@@ -2,7 +2,7 @@
   'use strict';
   const data = window.SHREDDER_DATA;
   const canvas = document.getElementById('game');
-  const game = new window.ShredderCore.Game(data.settings, data.course);
+  const game = new window.ShredderCore.Game(data.settings, data.course, data.courses);
   const runner = new window.ShredderCore.Runner(game);
   const renderer = new window.ShredderRenderer.Renderer(canvas, data);
   const ui = new window.ShredderUI.UI(document.getElementById('stage'), command, data);
@@ -25,6 +25,13 @@
       document.getElementById('mute-button').textContent = audio.muted ? 'Sound off / M' : 'Sound on / M'; return;
     }
     if (!loaded) return;
+    if (name.startsWith('course:')) {
+      if (game.selectCourse(name.slice(7))) {
+        resetClock(); audio.setActive(false); ui.update(game);
+        ui.panel.querySelector('input[name="course"]:checked')?.focus({ preventScroll: true });
+      }
+      return;
+    }
     if (name === 'choose-dude') {
       game.chooseDude(); resetClock(); ui.help = false; audio.setActive(false);
       renderer.render(game, 1); ui.update(game);

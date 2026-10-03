@@ -1,6 +1,7 @@
 """Build the double-clickable game. Python 3.9+, no player dependencies."""
 import base64
 import json
+import math
 from pathlib import Path
 import re
 import subprocess
@@ -57,6 +58,56 @@ def embedded(root, entries, kind):
     return result
 
 
+def courses(root, original):
+    """A fixed local catalog; no external paths, unlocks or runtime requests."""
+    catalog = [{"id": "night-shift", "course": original}]
+    names = {original["name"]}
+    for identifier in ("linked-lines", "gap-attack"):
+        path = (root / "courses" / (identifier + ".json")).resolve()
+        if not path.is_relative_to((root / "courses").resolve()):
+            raise ValueError("Non-production course path")
+        course = read_json(path)
+        if course.get("id") != identifier or not isinstance(course.get("name"), str) or not course["name"] or course["name"] in names:
+            raise ValueError("Invalid course identity")
+        names.add(course["name"])
+        def number(value):
+            return type(value) in (int, float) and math.isfinite(value)
+        length = course.get("length")
+        if not number(length) or length <= 0:
+            raise ValueError("Invalid course length")
+        checkpoints = course.get("checkpoints", [])
+        if not checkpoints or checkpoints[0] != 0 or any(not number(x) or x < 0 or x >= length for x in checkpoints) or checkpoints != sorted(set(checkpoints)):
+            raise ValueError("Invalid course checkpoints")
+        ids, previous = set(), -1
+        objects = course["objects"]
+        for obj in objects:
+            if not isinstance(obj.get("id"), str) or not obj["id"] or obj["id"] in ids:
+                raise ValueError("Duplicate or invalid obstacle ID")
+            ids.add(obj["id"])
+            if obj.get("type") not in {"curb", "cone", "jersey_barrier", "stairs", "gap", "rail", "ledge", "bench", "low_bar", "crack"}:
+                raise ValueError("Invalid obstacle type")
+            if any(not number(obj.get(key)) for key in ("x", "width", "height")):
+                raise ValueError("Non-finite obstacle bounds")
+            x, width, height = (obj[key] for key in ("x", "width", "height"))
+            if x < previous or x < 0 or width <= 0 or height < 0 or x + width > length:
+                raise ValueError("Invalid or unsorted obstacle bounds")
+            previous = x
+            for key in ("baseHeight", "minPrep", "popDistance"):
+                if key in obj and (not number(obj[key]) or obj[key] < 0):
+                    raise ValueError("Invalid obstacle geometry")
+            if obj.get("baseHeight", 0) > height or obj.get("laneY", 0) != 0:
+                raise ValueError("Invalid side-on geometry")
+            if obj["type"] == "stairs" and (type(obj.get("steps")) is not int or obj["steps"] < 1):
+                raise ValueError("Invalid stair steps")
+            if obj.get("speedRequired") and (obj["type"] != "gap" or obj.get("minPrep", 0) < 1200):
+                raise ValueError("Speed gap needs a marked run-up")
+        for gap in (obj for obj in objects if obj["type"] == "gap"):
+            if any(obj["type"] in {"ledge", "stairs"} and obj["x"] < gap["x"] + gap["width"] and obj["x"] + obj["width"] > gap["x"] for obj in objects):
+                raise ValueError("A gap cannot hide continuous support")
+        catalog.append({"id": identifier, "course": course})
+    return catalog
+
+
 def assemble(root=ROOT):
     manifest = prepare(root)
     data = {
@@ -67,6 +118,7 @@ def assemble(root=ROOT):
         "course": read_json(root / "course.json"),
         "provenance": manifest["provenance"],
     }
+    data["courses"] = courses(root, data["course"])
     # JSON must not be able to terminate its enclosing classic script element.
     serialized = json.dumps(data, separators=(",", ":"), ensure_ascii=True).replace("<", "\\u003c")
     replacements = {"GAME_DATA": "window.SHREDDER_DATA = " + serialized + ";",

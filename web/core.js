@@ -12,8 +12,14 @@
     chooseDude() {
       this.status = 'menu'; this.clearInput(); this.events = []; this.pushPhase = 0;
     }
-    constructor(settings, course) {
-      this.cfg = settings; this.course = course; this.practice = false;
+    selectCourse(identifier) {
+      const entry = this.courses.find(item => item.id === identifier);
+      if (this.status !== 'menu' || !entry) return false;
+      this.courseId = entry.id; this.course = entry.course; this.clearInput(); return true;
+    }
+    constructor(settings, course, courses = [{ id: 'night-shift', course }]) {
+      this.courses = courses; this.courseId = courses[0].id;
+      this.cfg = settings; this.course = courses[0].course; this.practice = false;
       this.practiceObstacles = false; this.events = []; this.restart(false);
     }
     restart(play = true, practice = this.practice, challenges = this.practiceObstacles) {
@@ -65,7 +71,7 @@
     emit(type, detail = {}) { this.events.push({ type, at: this.time, ...detail }); }
     drainEvents() { return this.events.splice(0); }
     clearInput() {
-      this.keys = {}; this.space = null; this.downAt = -Infinity;
+      this.keys = {}; this.space = null; this.downAt = -Infinity; this.leftAt = -Infinity;
       this.pushClock = 0; this.pushPhase = 0; this.pushAge = Infinity;
       if (this.mode === 'manual') this.endManual();
     }
@@ -80,16 +86,27 @@
       this.keys[key] = pressed;
       if (key === 'Space') { if (pressed) this.pressSpace(); else this.releaseSpace(); }
       if (key === 'Down' && pressed) {
-        this.downAt = this.time;
+        this.downAt = this.time; this.leftAt = -Infinity;
         if (this.mode === 'manual') this.endManual();
         if (this.mode === 'grind') this.dropRail();
       }
       if (key === 'Up' && pressed && this.mode === 'air' && !this.flip &&
           this.time - this.downAt <= this.cfg.gestureWindow + EPS) {
-        this.downAt = -Infinity; this.flip = { at: this.time, done: false };
-        this.balance = 0; this.trick = 'KICKFLIP'; this.emit('flip');
+        this.startFlip('kick');
       }
+      if (key === 'Left' && pressed) {
+        this.leftAt = this.mode === 'air' && this.popCharge !== null && !this.flip &&
+          this.time - this.downAt > this.cfg.gestureWindow + EPS ? this.time : -Infinity;
+      }
+      if (key === 'Right' && pressed && this.mode === 'air' && this.popCharge !== null && !this.flip &&
+          this.time - this.leftAt <= this.cfg.gestureWindow + EPS &&
+          this.time - this.downAt > this.cfg.gestureWindow + EPS) this.startFlip('tre');
       if (key === 'Up' && !pressed && this.mode === 'manual') this.endManual();
+    }
+    startFlip(kind) {
+      this.downAt = -Infinity; this.leftAt = -Infinity;
+      this.flip = { kind, duration: kind === 'tre' ? .55 : this.cfg.flipDuration, at: this.time, done: false };
+      this.balance = 0; this.trick = kind === 'tre' ? 'TRE FLIP' : 'KICKFLIP'; this.emit('flip', { kind });
     }
     pressSpace() {
       if (this.mode === 'grind') { this.pop(0.45); return; }
@@ -107,7 +124,7 @@
       this.pop(charge);
     }
     pop(charge) {
-      this.mode = 'air'; this.surface = null; this.space = null;
+      this.mode = 'air'; this.surface = null; this.space = null; this.leftAt = -Infinity;
       this.velocityZ = this.cfg.lightPopVelocity + charge * (this.cfg.fullPopVelocity - this.cfg.lightPopVelocity);
       this.popCharge = charge; this.rollTime = 0; this.pushPhase = 0; this.message = '';
       this.emit('ollie');
@@ -164,7 +181,7 @@
       for (const x of points) {
         if (x > this.worldX || hazards.some(o => this.overlapping(o, x))) continue;
         const next = hazards.filter(o => o.x >= x + half).sort((a, b) => a.x - b.x)[0];
-        if (!next || next.x - half - x >= this.cfg.speed * 1.4) return x;
+        if (!next || next.x - half - x >= Math.max(this.cfg.speed * 1.4, next.minPrep || 0)) return x;
       }
       return 0;
     }
@@ -187,16 +204,18 @@
       const steer = (this.keys.Right ? 1 : 0) - (this.keys.Left ? 1 : 0);
       const drift = this.cfg.balanceDrift + Math.sin(this.time * 3) * this.cfg.balanceVariation;
       this.balance = clamp(this.balance + (drift + steer * this.cfg.balanceCorrection) * dt, -1, 1);
-      if (this.flip) this.flip.done = this.time - this.flip.at + EPS >= this.cfg.flipDuration;
+      if (this.flip) this.flip.done = this.time - this.flip.at + EPS >= (this.flip.duration || this.cfg.flipDuration);
       if (this.mode === 'air') return; // Air tricks fail at landing, never in mid-air.
       this.unsafeTime = Math.abs(this.balance) > this.cfg.balanceSafe ? this.unsafeTime + dt : 0;
       if (this.unsafeTime + EPS >= this.cfg.balanceGrace) this.bail('LOST BALANCE — steer toward the center');
     }
     land(z, surface, impact) {
+      const flipName = this.flip?.kind === 'tre' ? 'TRE FLIP' : 'KICKFLIP';
+      this.leftAt = -Infinity;
       if (this.flip && (!this.flip.done || Math.abs(this.balance) > this.cfg.balanceSafe)) {
-        this.bail(this.flip.done ? 'KICKFLIP — land inside the safe zone' : 'KICKFLIP — start earlier to finish'); return;
+        this.bail(flipName + (this.flip.done ? ' — land inside the safe zone' : ' — start earlier to finish')); return;
       }
-      if (this.flip || this.popCharge !== null) this.award(this.flip ? 'KICKFLIP' : this.popCharge > 0.3 ? 'CHARGED OLLIE' : 'OLLIE', this.flip ? 180 : 40);
+      if (this.flip || this.popCharge !== null) this.award(this.flip ? flipName : this.popCharge > 0.3 ? 'CHARGED OLLIE' : 'OLLIE', this.flip ? this.flip.kind === 'tre' ? 360 : 180 : 40);
       this.popCharge = null; this.flip = null; this.jumpZ = z; this.velocityZ = 0; this.surface = surface;
       this.mode = 'rolling'; this.unsafeTime = 0; this.space = null;
       this.emit('land', { impact: clamp(Math.abs(impact) / this.cfg.fullPopVelocity, 0.2, 1) });
