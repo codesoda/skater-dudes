@@ -202,6 +202,96 @@ test('descending stair bitmap slices share every physical tread and never mirror
   assert.ok(calls.filter(c => c[0] === 'drawImage').every(c => c[1].key === 'ledge'));
   assert.ok(!calls.some(c => c[0] === 'scale'));
 });
+test('compact manual and grind panels follow both bodies at street and elevated lane heights', () => {
+  for (const characterId of ['jeff', 'dave']) for (const mode of ['manual', 'grind']) {
+    for (const jumpZ of [0, 60, 120, 180, 240]) for (const laneY of [-12, 0, 12]) {
+      const { renderer, game, calls } = setup();
+      game.chooseDude(); game.selectCharacter(characterId); game.restart();
+      Object.assign(game, { mode, jumpZ, laneY });
+      renderer.skater(game, game.cfg.playerScreenX, game.cfg.baselineY + laneY - jumpZ, renderer.groundY(game, laneY));
+      const feet = calls.find(c => c[0] === 'translate')[2];
+      const body = calls.filter(c => c[0] === 'drawImage').at(-1);
+      const bodyTop = feet + body[3];
+      calls.length = 0; renderer.meters(game);
+      const rects = calls.filter(c => c[0] === 'fillRect'), [panel, track] = rects;
+      assert.equal(rects.length, 4); assert.deepEqual(panel.slice(3), [180, 56]);
+      close(panel[1] + 90, game.cfg.playerScreenX); close(panel[2] + 56 + 8, bodyTop);
+      close(track[1] + 72, game.cfg.playerScreenX); close(track[2], panel[2] + 24);
+      assert.deepEqual(track.slice(3), [144, 10]);
+      assert.ok(panel[2] >= 8 && panel[2] + 56 <= 532);
+      assert.ok(!rects.some(c => c[1] === 305 && c[2] === 49));
+    }
+  }
+});
+test('compact safe zone and needle retain the same proportions, correction direction and warning', () => {
+  for (const mode of ['manual', 'grind']) for (const balanceSafe of [.15, .25, .4]) {
+    for (const balance of [-1, -.25, 0, .25, 1]) {
+      const { renderer, game, calls } = setup();
+      game.cfg = { ...game.cfg, balanceSafe }; Object.assign(game, { mode, balance, unsafeTime: Math.abs(balance) > balanceSafe ? .1 : 0 });
+      const texts = [], text = renderer.text.bind(renderer);
+      renderer.text = (...args) => { texts.push(args); text(...args); };
+      renderer.meters(game);
+      const [panel, track, safe, needle] = calls.filter(c => c[0] === 'fillRect');
+      close(safe[1] + safe[3] / 2, 250); close(safe[3] / track[3], balanceSafe);
+      close(needle[1] + 2, 250 + balance * track[3] / 2);
+      close(needle[2], panel[2] + 21); assert.equal(needle[4], 16);
+      assert.equal(texts[1][0], game.unsafeTime > 0 ? 'CORRECT NOW! ← →' : 'BALANCE ← →');
+      assert.equal(texts[1][4], game.unsafeTime > 0 ? '#ffbf66' : '#eee6ff');
+    }
+  }
+});
+test('compact grind lock cue becomes GRIND after 750 ms, while manual is always labeled', () => {
+  const { renderer, game, calls } = setup(); Object.assign(game, { mode: 'grind', grindAt: 3 });
+  for (const [time, label] of [[3, '50-50 LOCKED'], [3.749, '50-50 LOCKED'], [3.75, 'GRIND']]) {
+    calls.length = 0; game.time = time; renderer.meters(game);
+    assert.equal(calls.find(c => c[0] === 'fillText')[1], label);
+  }
+  calls.length = 0; game.mode = 'manual'; renderer.meters(game);
+  assert.equal(calls.find(c => c[0] === 'fillText')[1], 'MANUAL');
+});
+test('render forwards interpolated feet so compact balance stays eight pixels above the drawn body', () => {
+  for (const mode of ['manual', 'grind']) for (const alpha of [0, .25, .75, 1]) {
+    const { renderer, game, calls } = setup();
+    Object.assign(game, { mode, jumpZ: 120, laneY: 12, previous: { worldX: 0, jumpZ: 60, laneY: -12 } });
+    renderer.background = () => {}; renderer.hint = () => {};
+    renderer.world = (g, camera, x, feet, ground) => renderer.skater(g, x, feet, ground);
+    renderer.render(game, alpha);
+    const feet = calls.find(c => c[0] === 'translate')[2];
+    const body = calls.filter(c => c[0] === 'drawImage').at(-1);
+    const panel = calls.find(c => c[0] === 'fillRect' && c[3] === 180 && c[4] === 56);
+    close(panel[2] + 64, feet + body[3]);
+  }
+});
+test('compact panel clamps inside the canvas at extreme fixture positions', () => {
+  for (const playerScreenX of [-10, 970]) for (const jumpZ of [-500, 500]) {
+    const { renderer, game, calls } = setup();
+    game.cfg = { ...game.cfg, playerScreenX }; Object.assign(game, { mode: 'manual', jumpZ });
+    renderer.meters(game); const panel = calls.find(c => c[0] === 'fillRect');
+    assert.ok(panel[1] >= 8 && panel[1] + panel[3] <= 952);
+    assert.ok(panel[2] >= 8 && panel[2] + panel[4] <= 532);
+  }
+});
+test('balance panels stay hidden outside play, in crashes and during ordinary ollies or rolling', () => {
+  for (const status of ['menu', 'paused', 'finished', 'playing']) for (const mode of ['manual', 'grind', 'crash', 'air', 'rolling']) {
+    if (status === 'playing' && ['manual', 'grind'].includes(mode)) continue;
+    const { renderer, game, calls } = setup(); Object.assign(game, { status, mode });
+    renderer.meters(game); assert.deepEqual(calls, [], `${status}:${mode}`);
+  }
+});
+test('kickflip retains the original top-center geometry, label, needle and rotation progress', () => {
+  for (const progress of [.5, 1]) for (const mode of ['air', 'manual', 'grind']) {
+    const { renderer, game, calls } = setup();
+    Object.assign(game, { mode, flip: { at: 0 }, time: progress * settings.flipDuration, balance: .2 });
+    renderer.meters(game);
+    assert.deepEqual(calls.filter(c => c[0] === 'fillRect'), [
+      ['fillRect', 305, 49, 350, 93], ['fillRect', 330, 80, 300, 16],
+      ['fillRect', 480 - settings.balanceSafe * 150, 80, settings.balanceSafe * 300, 16],
+      ['fillRect', 508, 77, 4, 22], ['fillRect', 330, 129, 300 * progress, 3]
+    ]);
+    assert.equal(calls.find(c => c[0] === 'fillText')[1], progress < 1 ? 'KICKFLIP · ROTATING' : 'KICKFLIP · CATCH READY');
+  }
+});
+
 test('both dudes keep anchored grind body during correction, wheels below truck contact and visible sparks', () => {
   for (const id of ['jeff', 'dave']) for (const balance of [-.24, .24]) {
     const { renderer, game, calls } = setup(); game.chooseDude(); game.selectCharacter(id); game.restart();
@@ -217,6 +307,9 @@ test('both dudes keep anchored grind body during correction, wheels below truck 
     assert.equal(calls.filter(c => c[0] === 'fillRect').length, 13);
     calls.length = 0; renderer.meters(game);
     assert.ok(calls.some(c => c[0] === 'fillText' && c[1] === '50-50 LOCKED'));
-    assert.ok(calls.some(c => c[0] === 'fillRect' && c[1] === 330 && c[2] === 80));
+    const panel = calls.find(c => c[0] === 'fillRect');
+    assert.deepEqual(panel.slice(3), [180, 56]); close(panel[1] + 90, 250);
+    const body = manifest.images[manifest.characters[id].poses.grind];
+    close(panel[2] + 56 + 8, y - body.anchor[1] * body.drawHeight / body.height);
   }
 });

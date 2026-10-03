@@ -225,7 +225,7 @@
       }
       items.sort((a, b) => a.depth - b.depth); for (const item of items) item.draw();
     }
-    meters(game) {
+    meters(game, feet = game.cfg.baselineY + game.laneY - game.jumpZ) {
       const c = this.ctx;
       if (game.status !== 'playing' || game.mode === 'crash') return;
       if (game.chargeVisible) {
@@ -238,6 +238,24 @@
         this.text('TO POP', 64, 304, 11);
       }
       if (!game.balanceActive) return;
+      if (!game.flip && (game.mode === 'manual' || game.mode === 'grind')) {
+        const characters = this.data.characters;
+        const character = Object.hasOwn(characters, game.characterId) ? characters[game.characterId] : characters.jeff;
+        const pose = game.mode === 'manual' && Math.abs(game.balance) > .12 ? game.balance > 0 ? 'lean_forward' : 'lean_back' : game.mode;
+        const body = this.data.images[character.poses[pose]], board = this.data.images.board_flat;
+        // Match the rendered body anchor, including truck contact on elevated grinds.
+        if (game.mode === 'grind') feet += (board.groundAnchor[1] - board.truckAnchor[1]) * board.drawHeight / board.height;
+        const center = Math.max(98, Math.min(862, game.cfg.playerScreenX));
+        const top = Math.max(8, Math.min(476, feet - body.anchor[1] * body.drawHeight / body.height - 8 - 56));
+        c.fillStyle = 'rgba(15,23,37,.94)'; c.fillRect(center - 90, top, 180, 56);
+        const label = game.mode === 'grind' && game.time - game.grindAt < .75 ? '50-50 LOCKED' : game.mode.toUpperCase();
+        this.text(label, center, top + 16, 11, '#e2d8ff', 'center');
+        c.fillStyle = '#7b496f'; c.fillRect(center - 72, top + 24, 144, 10);
+        c.fillStyle = '#70dfbb'; c.fillRect(center - game.cfg.balanceSafe * 72, top + 24, game.cfg.balanceSafe * 144, 10);
+        c.fillStyle = '#ffffff'; c.fillRect(center - 2 + game.balance * 72, top + 21, 4, 16);
+        this.text(game.unsafeTime > 0 ? 'CORRECT NOW! ← →' : 'BALANCE ← →', center, top + 48, 10, game.unsafeTime > 0 ? '#ffbf66' : '#eee6ff', 'center');
+        return;
+      }
       c.fillStyle = 'rgba(15,23,37,.94)'; c.fillRect(305, 49, 350, 93);
       const flip = game.flip, progress = flip ? Math.min(1, (game.time - flip.at) / game.cfg.flipDuration) : 1;
       const label = flip ? progress < 1 ? 'KICKFLIP · ROTATING' : 'KICKFLIP · CATCH READY' : game.mode === 'grind' && game.time - game.grindAt < .75 ? '50-50 LOCKED' : game.mode.toUpperCase();
@@ -272,7 +290,7 @@
       const lane = mix(game.previous.laneY, game.laneY, alpha), camera = x - game.cfg.playerScreenX;
       this.background(game, camera);
       this.world(game, camera, game.cfg.playerScreenX, game.cfg.baselineY + lane - z, this.groundY(game, lane));
-      this.hint(game); this.meters(game);
+      this.hint(game); this.meters(game, game.cfg.baselineY + lane - z);
       if (game.mode === 'crash') {
         c.fillStyle = 'rgba(28,13,36,.35)'; c.fillRect(0, 0, 960, 540);
         this.text('BAIL!  BACK ON YOUR BOARD…', 480, 224, 24, '#ffc286', 'center');

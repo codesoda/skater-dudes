@@ -33,15 +33,19 @@ async function observe(page) {
     const start = audio.start.bind(audio);
     audio.start = (...args) => { const item = start(...args); if (item) qa.starts.push({ key: item.key, loop: item.loop, mode: game.mode, time: game.time }); return item; };
     const meters = renderer.meters.bind(renderer), rect = renderer.ctx.fillRect.bind(renderer.ctx);
-    renderer.meters = g => {
+    renderer.meters = (...args) => {
       qa.meters = [];
-      renderer.ctx.fillRect = (...args) => { qa.meters.push(args); return rect(...args); };
-      try { meters(g); } finally { renderer.ctx.fillRect = rect; }
+      renderer.ctx.fillRect = (...rectArgs) => { qa.meters.push(rectArgs); return rect(...rectArgs); };
+      try { meters(...args); } finally { renderer.ctx.fillRect = rect; }
     };
     const sprite = renderer.sprite.bind(renderer);
     renderer.sprite = (key, ...args) => {
       // Keep body/board evidence, not street props that evict flip frames at 120 Hz.
       if (/^(skater_|dave_|board_)/.test(key)) qa.poses.push({ key, mode: game.mode, at: game.time });
+      if (/^(skater_|dave_)/.test(key)) {
+        const body = renderer.data.images[key];
+        qa.bodyTop = renderer.ctx.getTransform().f + args[1] - body.anchor[1] * body.drawHeight / body.height;
+      }
       return sprite(key, ...args);
     };
     function sample(at) {
@@ -109,9 +113,23 @@ function topMeter(rects) {
   assert.ok(rects.some(([x, y, w, h]) => Math.abs(x + w / 2 - 480) < .01 && y === 80 && w === 75 && h === 16));
 }
 
+async function nearSkaterMeter(page) {
+  const { rects, bodyTop, center } = await page.evaluate(() => ({
+    rects: window.qa.meters, bodyTop: window.qa.bodyTop, center: window.SHREDDER.game.cfg.playerScreenX
+  }));
+  const panel = rects.find(([, , w, h]) => w === 180 && h === 56);
+  assert.ok(panel); assert.equal(panel[0] + 90, center);
+  // Canvas stores transforms at float precision; tolerate less than 1/1000 px.
+  assert.ok(Math.abs(panel[1] + 64 - bodyTop) < .001, JSON.stringify({ panel, bodyTop }));
+  assert.ok(rects.some(([x, y, w, h]) => x === center - 72 && y === panel[1] + 24 && w === 144 && h === 10));
+  assert.ok(rects.some(([x, y, w, h]) => x + w / 2 === center && y === panel[1] + 24 && w === 36 && h === 10));
+  assert.ok(!rects.some(([, , w, h]) => w === 350 && h === 93));
+}
+
 test('offline Chrome: trusted controls, rendering, audio, responsiveness and complete real-time route', { timeout: 180000 }, async t => {
   fs.mkdirSync(path.join(OUT, 'speed-obstacles-audio'), { recursive: true });
   fs.mkdirSync(path.join(OUT, 'elevated-lines-grinds'), { recursive: true });
+  fs.mkdirSync(path.join(OUT, 'balance-position'), { recursive: true });
   const requested = process.env.SHREDDER_BROWSER;
   const channel = requested === 'chromium-headless-shell' ? undefined :
     requested || (fs.existsSync('/Applications/Google Chrome.app') ? 'chrome' : undefined);
@@ -208,7 +226,8 @@ test('offline Chrome: trusted controls, rendering, audio, responsiveness and com
     await until(page, s => s.mode === 'crash'); await page.keyboard.up('ArrowRight');
     assert.match((await state(page)).message, /safe zone/); await shot(page, 'crash');
     await until(page, s => s.mode === 'rolling'); assert.equal((await state(page)).bails, 1);
-    await page.keyboard.down('ArrowUp'); await wait(160); topMeter(await page.evaluate(() => window.qa.meters));
+    await page.keyboard.down('ArrowUp'); await wait(160); await nearSkaterMeter(page);
+    await shot(page, 'balance-position/trusted-manual-desktop');
     const before = (await state(page)).balance; await page.keyboard.down('ArrowLeft'); await wait(100); await page.keyboard.up('ArrowLeft');
     assert.ok((await state(page)).balance < before); await shot(page, 'manual');
     await page.keyboard.up('ArrowUp'); await wait(500); assert.ok((await state(page)).score >= 60);
@@ -347,7 +366,8 @@ test('offline Chrome: trusted controls, rendering, audio, responsiveness and com
       for (const obj of objects) if (s.x > obj.x + obj.width + 22) crossed.add(obj.id);
       if (s.mode === 'grind' && !railShot) {
         assert.equal(await page.evaluate(() => window.SHREDDER.audio.loops.has('grind')), true);
-        capture('railgrind'); railShot = true;
+        await nearSkaterMeter(page);
+        capture('railgrind'); capture('balance-position/trusted-grind-desktop'); railShot = true;
       }
       if (s.mode === 'rolling' && s.surface) ridden.add(s.surface);
       const elevated = s.mode === 'rolling' && s.surface === 'transfer-ledge' && s.x > 17600 ? 'rideledge' :
@@ -528,6 +548,42 @@ test('offline Chrome: trusted controls, rendering, audio, responsiveness and com
       await practice.click(); assert.equal((await state(responsive)).status, 'playing');
       const box = await responsive.locator('#game').boundingBox(); assert.ok(Math.abs(box.width / box.height - 16 / 9) < .02);
       await responsive.close();
+    }
+  });
+  await t.test('compact balance stays bounded on phone and desktop in labeled render-only fixtures', async () => {
+    for (const [width, height] of [[390, 844], [1440, 900]]) {
+      const fixturePage = await context.newPage(); await fixturePage.setViewportSize({ width, height });
+      await fixturePage.goto(URL); await fixturePage.getByRole('button', { name: 'Practice first', exact: true }).click();
+      for (const characterId of ['jeff', 'dave']) for (const mode of ['manual', 'grind']) {
+        const geometry = await fixturePage.evaluate(({ characterId, mode }) => {
+          const { game, renderer } = window.SHREDDER;
+          // Clone for rendering only. Never change live physics, input or route state.
+          const jumpZ = mode === 'grind' ? 120 : 0, laneY = 12;
+          const fixture = Object.assign(Object.create(Object.getPrototypeOf(game)), game, {
+            mode, jumpZ, laneY, balance: .3, unsafeTime: .1, flip: null,
+            time: 1, grindAt: .8, worldX: 0, previous: { worldX: 0, jumpZ, laneY }
+          });
+          Object.defineProperty(fixture, 'characterId', { value: characterId });
+          Object.defineProperty(fixture, 'objects', { value: mode === 'grind' ?
+            [{ type: 'rail', x: -80, width: 700, height: jumpZ, laneY }] : [] });
+          const original = window.fixtureRender || (window.fixtureRender = renderer.render.bind(renderer));
+          renderer.render = () => {
+            original(fixture);
+            renderer.text(`RENDER FIXTURE · ${characterId.toUpperCase()} ${mode.toUpperCase()}`, 480, 500, 12, '#ffbf66', 'center');
+          };
+          const rects = [], fill = renderer.ctx.fillRect.bind(renderer.ctx);
+          renderer.ctx.fillRect = (...args) => { rects.push(args); fill(...args); };
+          try { renderer.render(); } finally { renderer.ctx.fillRect = fill; }
+          const panel = rects.find(([, , w, h]) => w === 180 && h === 56);
+          const canvas = renderer.canvas.getBoundingClientRect();
+          return { panel, left: canvas.left, top: canvas.top, scale: canvas.width / 960, width: innerWidth, height: innerHeight };
+        }, { characterId, mode });
+        const { panel, left, top, scale } = geometry; assert.ok(panel);
+        assert.ok(left + panel[0] * scale >= 0 && left + (panel[0] + panel[2]) * scale <= width);
+        assert.ok(top + panel[1] * scale >= 0 && top + (panel[1] + panel[3]) * scale <= height);
+        await shot(fixturePage, `balance-position/fixture-${width}-${characterId}-${mode}`);
+      }
+      await fixturePage.close();
     }
   });
   await t.test('missing AudioContext, rejected decode and blocked resume retain playable input', async () => {

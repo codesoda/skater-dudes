@@ -71,7 +71,7 @@ Cancel:           pause/help, blur/visibility loss, bail, menu or restart clears
 Space held in air: no automatic jump on landing; release before a new gesture.
 ```
 
-The horizontal balance meter appears at the **top center**, only for a flip, manual or grind. Ordinary ollies do not require balance. Manual/grind balance has a 240 ms unsafe-zone grace period. An unfinished or unbalanced flip fails at landing, not in mid-air. Down→Up has priority over rail catching. F does nothing.
+Manuals and grinds show a compact horizontal balance meter **directly above the skater**, following the skater's height. Kickflips keep the larger **top-center** balance meter and rotation progress. Ordinary ollies do not require balance. Manual/grind balance has a 240 ms unsafe-zone grace period. An unfinished or unbalanced flip fails at landing, not in mid-air. Down→Up has priority over rail catching. F does nothing.
 
 Jersey barriers, charged stairs and gaps need the extra pop. Jersey barriers are solid concrete, not cones, and are not grindable. Pavement HOLD/RELEASE marks and the live helper show the approach. Hold Space at HOLD, then release at RELEASE. HOLD uses current speed to allow 900 ms to load plus a 200 ms reaction margin. Space suppresses acceleration immediately, even during the first 300 ms. Airborne momentum coasts gradually; Right only balances during tricks. The full route uses this single hold-release gesture. The automated controller has exact state feedback; that does not prove the timing feels forgiving to a new player.
 
@@ -94,7 +94,7 @@ Space pops off; Down drops through that rail without catching it again.
 
 **RIDE LEDGE**, **UP NEXT STEP**, **UP TO GRIND** and **STAIRS DOWN** identify the line.
 Grinds use the selected dude's arms-out stance, hanging wheels, sparks and a brief **50-50 LOCKED** cue.
-The balance meter stays at the top center. A quiet contact clack and steel scrape distinguish grinding from riding.
+The compact balance meter follows the skater above elevated rails and ledges. Kickflip balance stays at the top center. A quiet contact clack and steel scrape distinguish grinding from riding.
 A failed tier retries before the complex, never inside a concrete block. Banked score and dude choice stay intact.
 
 ## Rebuild and test
