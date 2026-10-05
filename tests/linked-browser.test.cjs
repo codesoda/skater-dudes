@@ -6,13 +6,15 @@ const path = require('node:path');
 const { pathToFileURL } = require('node:url');
 const { chromium } = require('playwright');
 const { linkedRouteController } = require('./linked-route-helpers.js');
-const OUT = path.join(__dirname, 'artifacts/linked-levels');
+const OUT = path.join(__dirname, 'artifacts/level-progression');
 const URL = pathToFileURL(path.join(__dirname, '../index.html')).href;
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 async function state(page) {
   return page.evaluate(() => {
     const g = window.SHREDDER.game;
-    return { courseId: g.courseId, characterId: g.characterId, status: g.status, mode: g.mode, worldX: g.worldX,
+    const support = g.surface && g.objects.flatMap(o => g.solidParts(o)).find(o => o.id === g.surface);
+    return { supportEnd: support ? support.x + support.width + g.cfg.boardHalfWidth : null,
+      courseId: g.courseId, characterId: g.characterId, status: g.status, mode: g.mode, worldX: g.worldX,
       time: g.time, jumpZ: g.jumpZ, surface: g.surface, grounded: g.grounded, currentSpeed: g.currentSpeed,
       balanceActive: g.balanceActive, balance: g.balance, bails: g.bails, flip: g.flip, score: g.score,
       charge: g.charge, message: g.message, practice: g.practice };
@@ -61,22 +63,21 @@ async function fixtureSheet(page) {
   fs.writeFileSync(path.join(OUT, 'manual-closeups-FIXTURES.png'), Buffer.from(src.split(',')[1], 'base64'));
 }
 
-test('linked levels: native chooser, tre, two-foot manual fixtures and two entire trusted keyboard routes', { timeout: 220000 }, async t => {
+test('campaign: naturally earn all three routes with trusted keys and native next buttons, plus tre and manual fixtures', { timeout: 340000 }, async t => {
   fs.mkdirSync(OUT, { recursive: true }); const browser = await chromium.launch({ headless: true }); t.after(() => browser.close());
   const context = await browser.newContext({ offline: true, viewport: { width: 1280, height: 1000 } });
   const page = await context.newPage(), errors = [], network = [], results = [];
   page.on('pageerror', e => errors.push(e.message)); page.on('request', r => { if (/^https?:/.test(r.url())) network.push(r.url()); });
-  await page.goto(URL); await page.getByRole('group', { name: 'Choose your level' }).waitFor(); await observe(page);
+  await page.goto(URL); await page.getByRole('group', { name: 'Choose your dude' }).waitFor(); await observe(page);
   try {
-    const level = page.getByRole('radio', { name: 'Level 1: THE NIGHT SHIFT', exact: true });
-    await level.focus(); await page.keyboard.press('ArrowRight');
-    const linked = page.getByRole('radio', { name: 'Level 2: Linked Lines', exact: true });
-    assert.equal(await linked.isChecked(), true); assert.equal(await linked.evaluate(n => n === document.activeElement), true);
-    await page.keyboard.press('Space'); await page.keyboard.press('Enter');
-    assert.equal((await state(page)).status, 'menu'); assert.equal((await state(page)).courseId, 'linked-lines');
-    await page.getByRole('radio', { name: 'Dave', exact: true }).check(); assert.equal((await state(page)).courseId, 'linked-lines');
-    await shot(page, 'native-level-menu'); await page.getByRole('button', { name: 'Practice first', exact: true }).click();
-    await page.keyboard.press('KeyR'); assert.equal((await state(page)).courseId, 'linked-lines');
+    assert.equal(await page.getByRole('radio').count(), 2);
+    assert.equal(await page.locator('input[name="course"]').count(), 0);
+    assert.match(await page.locator('.current-level').innerText(), /Level 1: THE NIGHT SHIFT/);
+    await page.evaluate(() => { window.SHREDDER.command('course:gap-attack'); window.SHREDDER.command('next-level'); });
+    assert.equal((await state(page)).status, 'menu'); assert.equal((await state(page)).courseId, 'night-shift');
+    await page.getByRole('radio', { name: 'Dave', exact: true }).check();
+    await shot(page, 'readonly-level-menu'); await page.getByRole('button', { name: 'Practice first', exact: true }).click();
+    await page.keyboard.press('KeyR'); assert.equal((await state(page)).courseId, 'night-shift');
     await page.keyboard.down('Space'); await wait(1000); await page.keyboard.up('Space'); await wait(25);
     await page.keyboard.press('ArrowLeft'); await page.keyboard.press('ArrowRight');
     await page.waitForFunction(() => window.SHREDDER.game.flip?.kind === 'tre'); await shot(page, 'actual-keyboard-tre');
@@ -84,16 +85,16 @@ test('linked levels: native chooser, tre, two-foot manual fixtures and two entir
     await page.keyboard.down('ArrowUp'); await page.waitForFunction(() => window.SHREDDER.game.mode === 'manual');
     await shot(page, 'actual-dave-manual'); await page.keyboard.up('ArrowUp');
     await fixtureSheet(page); await menu(page);
-    for (const [id, title, dude] of [['linked-lines', 'Linked Lines', 'jeff'], ['gap-attack', 'Gap Attack', 'dave']]) {
-      await page.locator(`input[name="course"][value="${id}"]`).check();
-      await page.getByRole('radio', { name: dude === 'jeff' ? 'Jeff' : 'Dave', exact: true }).check();
-      await page.getByRole('button', { name: 'Ride the street', exact: false }).click();
+    await page.getByRole('button', { name: 'Ride the street', exact: false }).click();
+    for (const [index, [id, title, distance]] of [['night-shift', 'THE NIGHT SHIFT', '2.52'], ['linked-lines', 'Linked Lines', '1.90'], ['gap-attack', 'Gap Attack', '2.20']].entries()) {
+      const level = index + 1, dude = 'dave';
+      assert.equal((await state(page)).courseId, id);
       await page.evaluate(() => { window.linkedQA.supports = []; window.linkedQA.grinds = []; });
       assert.match(await page.locator('.stats').innerText(), new RegExp(title));
-      assert.match(await page.locator('.stats').innerText(), new RegExp(id === 'linked-lines' ? '1.90 km' : '2.20 km'));
+      assert.match(await page.locator('.stats').innerText(), new RegExp(distance + ' km'));
       const objects = await page.evaluate(() => window.SHREDDER.game.objects), plan = linkedRouteController(), held = {};
       const start = Date.now(); let captured = false;
-      while (Date.now() - start < 90000) {
+      while (Date.now() - start < 105000) {
         const g = await state(page); if (g.status === 'finished') break;
         assert.equal(g.bails, 0, JSON.stringify(g));
         const { keys } = plan({ ...g, objects });
@@ -110,21 +111,38 @@ test('linked levels: native chooser, tre, two-foot manual fixtures and two entir
       for (const height of [60, 120, 180, 240]) assert.ok(objects.some(o => o.height === height && evidence.supports.includes(o.id)));
       assert.match(await page.locator('.overlay').innerText(), new RegExp(title)); await shot(page, id + '-actual-results');
       results.push({ id, dude, ...g, wallSeconds: (Date.now() - start) / 1000, ...evidence });
-      await page.getByRole('button', { name: 'Choose dude', exact: true }).click(); assert.equal((await state(page)).courseId, id);
+      assert.equal(await page.getByRole('button', { name: `Play Level ${level} again`, exact: true }).count(), 1);
+      if (level < 3) {
+        const next = page.getByRole('button', { name: `Go to Level ${level + 1}`, exact: true });
+        await next.waitFor(); await wait(100); assert.equal((await state(page)).courseId, id);
+        if (level === 1) { await next.focus(); await page.keyboard.press('Enter'); }
+        else await next.click();
+        assert.equal((await state(page)).characterId, dude); assert.equal((await state(page)).status, 'playing');
+      } else {
+        assert.match(await page.locator('.overlay').innerText(), /Campaign completed\./);
+        assert.equal(await page.getByRole('button', { name: /Go to Level/ }).count(), 0);
+        await page.getByRole('button', { name: 'Play Level 3 again', exact: true }).click();
+        assert.equal((await state(page)).courseId, id); assert.equal((await state(page)).score, 0);
+        await menu(page); assert.equal((await state(page)).courseId, id);
+        assert.equal(await page.getByRole('radio').count(), 2);
+      }
     }
     assert.deepEqual(errors, []); assert.deepEqual(network, []);
     assert.ok(await page.evaluate(() => window.linkedQA.native.every(e => e.trusted)));
+    const fresh = await context.newPage(); await fresh.goto(URL);
+    await fresh.getByRole('group', { name: 'Choose your dude' }).waitFor();
+    assert.equal((await state(fresh)).courseId, 'night-shift'); await fresh.close();
   } finally {
     fs.writeFileSync(path.join(OUT, 'trusted-keyboard-routes.json'), JSON.stringify({ results, errors, network, history: await page.evaluate(() => window.linkedQA) }, null, 2));
   }
 });
 
-test('phone: native level selection and trusted ZingTouch mid-contact tre on the real clock', { timeout: 15000 }, async t => {
+test('phone: no level picker, starts Level 1 and trusted ZingTouch mid-contact tre on the real clock', { timeout: 15000 }, async t => {
   fs.mkdirSync(OUT, { recursive: true }); const browser = await chromium.launch({ headless: true }); t.after(() => browser.close());
   const context = await browser.newContext({ offline: true, viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
-  const page = await context.newPage(); await page.goto(URL); await page.getByRole('group', { name: 'Choose your level' }).waitFor(); await observe(page);
-  await page.getByRole('radio', { name: 'Level 3: Gap Attack', exact: true }).tap();
-  assert.equal((await state(page)).courseId, 'gap-attack'); assert.equal((await state(page)).status, 'menu');
+  const page = await context.newPage(); await page.goto(URL); await page.getByRole('group', { name: 'Choose your dude' }).waitFor(); await observe(page);
+  assert.equal(await page.getByRole('radio').count(), 2); assert.equal(await page.locator('input[name="course"]').count(), 0);
+  assert.equal((await state(page)).courseId, 'night-shift'); assert.equal((await state(page)).status, 'menu');
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
   await page.getByRole('radio', { name: 'Dave', exact: true }).tap(); await page.getByRole('button', { name: 'Practice first', exact: true }).tap();
   const box = await page.locator('#game').boundingBox(), p = { x: box.x + box.width * .55, y: box.y + box.height * .5 };
@@ -138,7 +156,7 @@ test('phone: native level selection and trusted ZingTouch mid-contact tre on the
     await page.waitForFunction(() => window.SHREDDER.game.flip?.kind === 'tre');
     await touch('touchEnd'); await shot(page, 'actual-phone-tre');
     await page.waitForFunction(() => window.SHREDDER.game.score >= 360); assert.equal((await state(page)).bails, 0);
-    assert.equal((await state(page)).characterId, 'dave'); assert.equal((await state(page)).courseId, 'gap-attack');
+    assert.equal((await state(page)).characterId, 'dave'); assert.equal((await state(page)).courseId, 'night-shift');
     assert.ok(await page.evaluate(() => window.linkedQA.native.filter(e => e.type.startsWith('touch')).every(e => e.trusted)));
   } finally {
     fs.writeFileSync(path.join(OUT, 'trusted-phone-tre.json'), JSON.stringify(await page.evaluate(() => window.linkedQA), null, 2));

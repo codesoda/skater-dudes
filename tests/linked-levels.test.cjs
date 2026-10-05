@@ -7,7 +7,7 @@ const original = require('../course.json');
 const { linkedRouteController } = require('./linked-route-helpers.js');
 const courses = [{ id: 'night-shift', course: original }, ...['linked-lines', 'gap-attack'].map(id => ({ id, course: require('../courses/' + id + '.json') }))];
 function route(entry, hz, dude) {
-  const g = new Game(settings, original, courses); g.selectCourse(entry.id); g.selectCharacter(dude); g.restart();
+  const g = new Game(settings, entry.course, [entry]); g.selectCharacter(dude); g.restart();
   const runner = new Runner(g), control = linkedRouteController();
   const evidence = { supports: [], grinds: [], pops: [], events: [] }, supports = new Set();
   for (let frame = 0; frame < hz * 90 && g.status === 'playing'; frame++) {
@@ -33,14 +33,63 @@ for (const entry of courses.slice(1)) test(`${entry.id}: input-only entire route
   for (const o of entry.course.objects.filter(o => o.type === 'gap')) assert.ok(expected.pops.some(p => p[0] === o.id && p[3] === 1), o.id);
   for (const o of entry.course.objects.filter(o => o.speedRequired)) assert.ok(expected.pops.some(p => p[0] === o.id && p[2] >= 370), o.id);
 });
-test('native catalog selection never autoplays and survives every run transition with the dude', () => {
-  const g = new Game(settings, original, courses); assert.equal(g.selectCourse('missing'), false);
-  for (const entry of courses) {
-    g.chooseDude(); assert.equal(g.selectCourse(entry.id), true); g.selectCharacter('dave');
-    assert.equal(g.status, 'menu'); assert.equal(g.course, entry.course);
-    g.restart(); assert.equal(g.selectCourse('night-shift'), false); g.pause(); g.resume(); g.bail('fixture'); g.recover();
+// Explicit short courses exercise natural step/finish transitions, not production traversal.
+function campaignFixture() {
+  const entries = courses.map(entry => ({ id: entry.id, course: { ...entry.course, length: 560, objects: [] } }));
+  return new Game({ ...settings, practiceLength: 560 }, entries[0].course, entries);
+}
+function finish(g) {
+  for (let i = 0; i < 600 && g.status === 'playing'; i++) g.step(1 / 60);
+  assert.equal(g.status, 'finished');
+  assert.equal(g.drainEvents().filter(e => e.type === 'finish').length, 1);
+}
+function resetRun(g) {
+  assert.equal(g.status, 'playing'); assert.equal(g.mode, 'rolling');
+  for (const key of ['score', 'combo', 'bestCombo', 'bails', 'time', 'worldX', 'distance', 'balance', 'checkpoint']) assert.equal(g[key], 0, key);
+  assert.equal(g.currentSpeed, settings.speed); assert.equal(g.space, null); assert.deepEqual(g.keys, {});
+  assert.deepEqual(g.events, []); assert.equal(g.flip, null); assert.equal(g.surface, null);
+}
+test('campaign starts at Level 1 without arbitrary selection or early advance', () => {
+  const g = campaignFixture();
+  assert.equal(g.courseId, 'night-shift'); assert.equal(g.levelNumber, 1);
+  assert.equal(typeof g.selectCourse, 'undefined'); assert.equal(g.advanceCourse(), false);
+  g.restart(); assert.equal(g.advanceCourse(), false);
+  g.pause(); assert.equal(g.advanceCourse(), false); g.resume();
+  g.bail('fixture'); assert.equal(g.advanceCourse(), false); g.recover();
+  g.chooseDude(); assert.equal(g.advanceCourse(), false); assert.equal(g.levelNumber, 1);
+});
+test('natural finishes earn exactly one next level and preserve either dude; final replay never advances', () => {
+  for (const dude of ['jeff', 'dave']) {
+    const g = campaignFixture(); g.selectCharacter(dude); g.restart();
+    for (let level = 1; level <= 3; level++) {
+      assert.equal(g.levelNumber, level); assert.equal(g.characterId, dude);
+      g.key('Up', true); g.step(1 / 60); g.key('Up', false); finish(g);
+      const completedX = g.worldX; g.step(1); assert.equal(g.worldX, completedX);
+      assert.equal(g.canAdvance, level < 3);
+      g.restart(); resetRun(g); assert.equal(g.levelNumber, level); assert.equal(g.advanceCourse(), false);
+      finish(g);
+      assert.equal(g.advanceCourse(), level < 3);
+      if (level < 3) { resetRun(g); assert.equal(g.advanceCourse(), false); assert.equal(g.levelNumber, level + 1); }
+    }
+    assert.equal(g.levelNumber, 3); assert.equal(g.canAdvance, false);
+    g.restart(); resetRun(g); assert.equal(g.levelNumber, 3);
+  }
+  assert.equal(campaignFixture().levelNumber, 1, 'fresh session has no saved unlock');
+});
+test('practice wrapping, restart, pause and dude menu keep the current earned course without unlocking', () => {
+  const g = campaignFixture(); g.selectCharacter('dave'); g.restart();
+  for (let level = 1; level <= 3; level++) {
+    g.key('Space', true); g.step(1 / 60); g.pause(); assert.equal(g.space, null);
+    assert.equal(g.advanceCourse(), false); g.resume(); g.bail('fixture'); g.recover();
+    g.chooseDude(); assert.equal(g.status, 'menu'); assert.equal(g.advanceCourse(), false);
     g.restart(true, true, true); assert.deepEqual(g.objects, original.practiceObjects);
-    g.restart(true, false); assert.equal(g.courseId, entry.id); assert.equal(g.characterId, 'dave');
+    g.restart(true, true, false);
+    for (let i = 0; i < 300; i++) g.step(1 / 60);
+    assert.equal(g.status, 'playing'); assert.ok(g.distance > g.cfg.practiceLength);
+    assert.equal(g.canAdvance, false); assert.equal(g.advanceCourse(), false);
+    g.restart(true, false); resetRun(g); assert.equal(g.levelNumber, level); assert.equal(g.characterId, 'dave');
+    g.key('Space', true); finish(g); assert.equal(g.space, null); assert.deepEqual(g.keys, {});
+    if (level < 3) assert.equal(g.advanceCourse(), true);
   }
 });
 test('each speed gap cannot be cleared at base speed across a full-charge takeoff sweep, but boost clears', () => {

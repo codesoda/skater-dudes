@@ -90,21 +90,10 @@
         state.textContent = radio.checked ? 'Selected' : 'Choose';
       }
     }
-    chooseCourses(parent, game) {
-      const group = element('fieldset', 'course-chooser');
-      group.append(element('legend', '', 'Choose your level'));
-      for (const [index, entry] of game.courses.entries()) {
-        const label = element('label', 'course-card'), radio = element('input');
-        radio.type = 'radio'; radio.name = 'course'; radio.value = entry.id; radio.checked = entry.id === game.courseId;
-        radio.setAttribute('aria-label', `Level ${index + 1}: ${entry.course.name}`);
-        radio.addEventListener('change', () => { if (radio.checked) this.action('course:' + entry.id); });
-        label.append(radio, document.createTextNode(`Level ${index + 1}: ${entry.course.name}`)); group.append(label);
-      }
-      parent.append(group);
-    }
     makePanel(game) {
       this.panel.replaceChildren(); this.choices = [];
       const content = element('div', 'panel-content'); this.panel.append(content);
+      const level = `Level ${game.levelNumber}: ${game.course.name}`;
       if (this.loading) {
         content.append(element('div', 'eyebrow', 'SKATER DUDES / OFFLINE PROTOTYPE'), element('h1', '', 'WARMING UP.'), element('p', '', this.loading));
         if (this.loading.startsWith('Artwork')) content.append(this.button('Retry artwork', 'retry', true));
@@ -116,7 +105,8 @@
           element('p', 'lead', 'Find your line. Stick the landing.'),
           element('p', 'description', 'A side-on skate run through the late shift. Build a combo, balance it, bank it. Bail? Retry after a cleared obstacle, with room to prepare.'));
         intro.append(element('p', 'dedication', 'Dedicated to Oscar, the raddest skater dude I know'));
-        this.chooseCharacters(intro, game); this.chooseCourses(intro, game);
+        this.chooseCharacters(intro, game);
+        intro.append(element('p', 'current-level', level));
         const buttons = element('div', 'menu-buttons');
         buttons.append(this.button('Ride the street  ↗', 'route', true), this.button('Practice first', 'practice'));
         intro.append(buttons);
@@ -134,13 +124,16 @@
         content.append(intro, guide); return;
       }
       if (game.status === 'finished' && !this.help) {
-        content.append(element('div', 'eyebrow', game.course.name + ' / COMPLETE'), element('h1', '', 'LINE FINISHED.'),
+        content.append(element('div', 'eyebrow', level + ' / COMPLETE'), element('h1', '', 'LINE FINISHED.'),
           element('p', 'summary-score', Math.round(game.score).toLocaleString() + ' BANKED'),
           element('p', '', `Best combo ${Math.round(game.bestCombo).toLocaleString()} · ${game.bails} bails · ${(game.course.length / 10000).toFixed(2)} km of street`));
-        const buttons = element('div', 'menu-buttons'); buttons.append(this.button('Run it again', 'restart', true), this.button('Flat practice', 'practice'), this.button('Choose dude', 'choose-dude'));
+        const buttons = element('div', 'menu-buttons');
+        if (game.canAdvance) buttons.append(this.button(`Go to Level ${game.levelNumber + 1}`, 'next-level', true));
+        else if (!game.practice && game.levelNumber === game.courses.length) content.append(element('p', '', 'Campaign completed.'));
+        buttons.append(this.button(`Play Level ${game.levelNumber} again`, 'restart', !game.canAdvance), this.button('Flat practice', 'practice'), this.button('Choose dude', 'choose-dude'));
         content.append(buttons); return;
       }
-      content.append(element('div', 'eyebrow', game.practice ? 'FLAT PRACTICE / ' + game.course.name : game.course.name), element('h1', '', this.help ? 'SKATER DUDES / CONTROLS' : 'TAKE A BREATHER.'));
+      content.append(element('div', 'eyebrow', game.practice ? 'FLAT PRACTICE / ' + level : level), element('h1', '', this.help ? 'SKATER DUDES / CONTROLS' : 'TAKE A BREATHER.'));
       if (this.help) {
         this.controls(content);
         content.append(element('p', 'fineprint', 'Release Space to jump. Full charge stays full while held, with no automatic jump. Landing while holding Space never jumps again. Pause or focus loss cancels charge. Normal ollies need no balancing.'));
@@ -153,10 +146,11 @@
       content.append(buttons);
     }
     update(game) {
-      document.querySelector('.edition').textContent = game.course.name + ' / V.01';
+      const level = `Level ${game.levelNumber}: ${game.course.name}`;
+      document.querySelector('.edition').textContent = level + ' / V.01';
       this.score.textContent = Math.round(game.score).toLocaleString();
       this.combo.textContent = game.combo ? `${Math.round(game.combo)} × ${game.multiplier}` : '—';
-      this.stats.textContent = `${game.course.name} · ${game.practice ? 'PRACTICE' : (game.worldX / 10000).toFixed(2) + ' / ' + (game.course.length / 10000).toFixed(2) + ' km'} · ${game.bails} BAILS · SPEED ${Math.round(game.currentSpeed)}`;
+      this.stats.textContent = `${level} · ${game.practice ? 'PRACTICE' : (game.worldX / 10000).toFixed(2) + ' / ' + (game.course.length / 10000).toFixed(2) + ' km'} · ${game.bails} BAILS · SPEED ${Math.round(game.currentSpeed)}`;
       this.trick.textContent = game.combo ? game.trick : 'ROLL CLEAN TO BANK';
       const show = game.status !== 'playing' || !!this.loading;
       this.panel.hidden = !show; this.hud.hidden = game.status === 'menu' || !!this.loading;

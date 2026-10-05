@@ -25,13 +25,6 @@
       document.getElementById('mute-button').textContent = audio.muted ? 'Sound off / M' : 'Sound on / M'; return;
     }
     if (!loaded) return;
-    if (name.startsWith('course:')) {
-      if (game.selectCourse(name.slice(7))) {
-        resetClock(); audio.setActive(false); ui.update(game);
-        ui.panel.querySelector('input[name="course"]:checked')?.focus({ preventScroll: true });
-      }
-      return;
-    }
     if (name === 'choose-dude') {
       game.chooseDude(); resetClock(); ui.help = false; audio.setActive(false);
       renderer.render(game, 1); ui.update(game);
@@ -40,6 +33,8 @@
     if (name === 'route' || name === 'practice' || name === 'restart' || name === 'start' && game.status === 'menu') {
       const practice = name === 'practice' || name === 'restart' && game.practice;
       game.restart(true, practice, ui.challenges); activate();
+    } else if (name === 'next-level') {
+      if (game.advanceCourse()) activate();
     } else if (name === 'resume' || name === 'pause' && game.status === 'paused') {
       if (game.status === 'paused') { game.resume(); activate(); }
       else ui.help = false;

@@ -12,10 +12,13 @@
     chooseDude() {
       this.status = 'menu'; this.clearInput(); this.events = []; this.pushPhase = 0;
     }
-    selectCourse(identifier) {
-      const entry = this.courses.find(item => item.id === identifier);
-      if (this.status !== 'menu' || !entry) return false;
-      this.courseId = entry.id; this.course = entry.course; this.clearInput(); return true;
+    get levelNumber() { return this.courses.findIndex(item => item.id === this.courseId) + 1; }
+    get canAdvance() { return this.status === 'finished' && !this.practice && this.levelNumber < this.courses.length; }
+    advanceCourse() {
+      if (!this.canAdvance) return false;
+      const entry = this.courses[this.levelNumber];
+      this.courseId = entry.id; this.course = entry.course;
+      this.restart(true, false); return true;
     }
     constructor(settings, course, courses = [{ id: 'night-shift', course }]) {
       this.courses = courses; this.courseId = courses[0].id;
