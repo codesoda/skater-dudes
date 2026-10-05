@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "waivers": [
+    {
+      "id": "GHSA-vfj7-8cjw-p6xm",
+      "url": "https://github.com/advisories/GHSA-vfj7-8cjw-p6xm",
+      "authorization": "user deployment override",
+      "reason": "Temporary acceptance of the dev-only aislop@0.16.1 -> micromatch@4.0.8 -> braces@3.0.3 scanner chain. These packages are not in the game bundle. No patched braces release is available in the recorded evidence.",
+      "issuedAt": "2026-10-05T06:02:52Z",
+      "expiresAt": "2026-10-19T06:02:52Z",
+      "renewal": "Expiration requires an upstream fix or explicit renewed authorization. Never renew automatically."
+    }
+  ]
+}

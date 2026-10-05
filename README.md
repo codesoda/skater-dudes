@@ -6,7 +6,7 @@ An original, side-on **Double Dragon-style belt-scrolling skate prototype**. V1 
 
 Play: **https://codesoda.github.io/skater-dudes/**
 
-The live site still serves the older deployment `a989013`. The features below are local and pending publication, blocked by the quality gate.
+The features below await a checked `main` deployment and live-site verification. The temporary scanner advisory waiver below permits publication only after all other checks pass.
 
 Source: https://github.com/codesoda/skater-dudes
 
@@ -18,11 +18,13 @@ The start screen says: **Dedicated to Oscar, the raddest skater dude I know**
 
 Choose **Jeff** or **Dave** before starting. Jeff is selected by default. Jeff wears an orange helmet and purple hoodie. Dave wears a teal helmet and coral hoodie. Both have identical physics, tricks, boards and sound. Click a named sprite card, or Tab to the radio group and use Arrow keys or Space. Native menu controls do not trigger gameplay.
 
-**Choose dude** on the pause, controls or result screen returns to this menu without reloading. It stops audio and clears held keys and charge. The menu keeps your selected level, dude and banked score. Starting Route or Practice begins a new run and resets the score. Restart, Practice, help, pause, safe retries and menu return keep your selected level and dude. Selection changes only in the menu.
+**Choose dude** on the pause, controls or result screen returns to this menu without reloading. It stops audio and clears held keys and charge. The menu keeps your current earned level, dude and banked score. Starting Route or Practice begins a new run and resets the score. Restart, Practice, help, pause, safe retries and menu return keep your current level and dude. Only dude selection changes in the menu.
 
-Choose a level with the native menu selector: **The Night Shift** (original, 2.52 km), **Linked Lines** (1.90 km), or **Gap Attack** (2.20 km). The run title and distance follow the selected course.
+Every fresh page starts **Level 1: The Night Shift** (original, 2.52 km). There is no level picker or saved unlock. Finish the route to see **Go to Level 2** or **Play Level 1 again**. Level 2 is **Linked Lines** (1.90 km). Finish it to see **Go to Level 3** or **Play Level 2 again**. Level 3 is **Gap Attack** (2.20 km). Its results show **Campaign completed** and **Play Level 3 again**.
 
-Choose **Practice first** to learn on an empty street. The menu checkbox adds a curb and rail. Practice repeats without a timer. **Ride the street** starts the selected route. The Night Shift has 44 objects: 29 meaningful hazards and 15 cracks. It takes 90 seconds at base speed, or less with deliberate speed-building sections. Three concrete jersey barriers need a charged pop. Four overhead bars need Hold Down; their supports sit outside the skating line. Bails retry just past a successfully cleared obstacle. Short spacing uses an earlier cleared obstacle or the start, leaving at least 1.4 seconds before the next obstacle. Failed hazards are never skipped. Banked points stay; the current combo is lost. A clean run ends with results.
+Nothing advances automatically. Only the next-level result button advances, one level at a time, without reloading. Practice never unlocks a level. Replay keeps the current level. Advance and replay keep Jeff or Dave and reset the run, including held input and momentum. Menus, HUD and results show the current level number and name as read-only text. Next and replay buttons work with mouse, keyboard and touch.
+
+Choose **Practice first** to learn on an empty street. The menu checkbox adds a curb and rail. Practice repeats without a timer. **Ride the street** starts the current earned route. The Night Shift has 44 objects: 29 meaningful hazards and 15 cracks. It takes 90 seconds at base speed, or less with deliberate speed-building sections. Three concrete jersey barriers need a charged pop. Four overhead bars need Hold Down; their supports sit outside the skating line. Bails retry just past a successfully cleared obstacle. Short spacing uses an earlier cleared obstacle or the start, leaving at least 1.4 seconds before the next obstacle. Failed hazards are never skipped. Banked points stay; the current combo is lost. A clean run ends with results.
 
 Small screens show scrollable menus and a scaled 16:9 game. **Keyboard and one-finger phone gestures both work.** Portrait works; landscape gives a wider street view. There is no virtual direction pad or overlay button grid.
 
@@ -124,7 +126,7 @@ npm run scan
 
 ### GitHub Pages
 
-Pushes to `main`, pull requests targeting `main`, and manual runs use `.github/workflows/pages.yml`. Checks install locked npm dependencies and pinned Pillow, prepare offline QA fixtures, run the full test suite with Chromium headless shell and WebKit phone contexts, then require the quality scan and clean dependency audit. Failed scans retain their reports and error logs for 14 days.
+Pushes to `main`, pull requests targeting `main`, and manual runs use `.github/workflows/pages.yml`. Checks install locked npm dependencies and pinned Pillow, prepare offline QA fixtures, run the full test suite with Chromium headless shell and WebKit phone contexts, then require the quality scan and complete dependency audit. Only the exact temporary advisory waiver below can allow known audit findings. Failed scans retain their reports and error logs for 14 days.
 
 Only a successful `main` run outside a pull request uploads the checked `dist/` artifact and deploys it to GitHub Pages. Pull requests never deploy. The repository must use **GitHub Actions** as its Pages source. Deployments use the `github-pages` environment and run one at a time.
 
@@ -134,7 +136,7 @@ The browser test uses installed Google Chrome on macOS when available; otherwise
 
 `npm test` rebuilds the real bundle, checks all Python asset/export tests, and discovers **every `tests/*.test.cjs`**. Test files run serially so independent browser suites do not compete during real-clock input and frame measurements. Browser tests open a `file://` URL with networking offline. The full-route test takes about 89 real seconds with a trusted opening boost and coast; it does not accelerate rAF or mutate player position. `tests/artifacts/` contains screenshots, measured key timings, decoded-audio bounds, normal-clock performance samples and the route log. Generated evidence is ignored by Git.
 
-`npm run scan` uses pinned Aislop **0.16.1** with recognized `.aislop/config.yml`, `ci.failBelow: 95`. It requires scoreable coverage, all five engines, a successful native CI result, and a separate clean npm audit. It does not lower thresholds or disable finding rules. Playwright is pinned to **1.62.1**. Authored JS, Python, scripts and tests remain in scope. Only generated output, media, dependencies, local research, debug artifacts and the narrow `vendor/zingtouch/**` third-party path are excluded. No authored integration or test code is excluded.
+`npm run scan` uses pinned Aislop **0.16.1** with recognized `.aislop/config.yml`, `ci.failBelow: 95`. It requires scoreable coverage, all five engines, zero scanner errors, a successful native CI result, and a separate complete npm audit. The audit must be clean or match the exact active waiver in `security/audit-waivers.json`. It does not lower thresholds, skip tests or disable finding rules. The original unfiltered npm report remains in `tests/artifacts/quality/npm-audit.json`; `audit-waiver.json` beside it records whether the exception applies and when it expires. Playwright is pinned to **1.62.1**. Authored JS, Python, scripts and tests remain in scope. Only generated output, media, dependencies, local research, debug artifacts and the narrow `vendor/zingtouch/**` third-party path are excluded. No authored integration or test code is excluded.
 
 To regenerate outputs explicitly:
 
@@ -172,9 +174,9 @@ Sound starts only after play and a user gesture. A single music loop persists wh
 
 ## Playtest status and open questions
 
-Current local evidence is in `tests/artifacts/linked-levels/validation.json`: **310 tests passed** (58 Python, 252 Node), with no failures or skips. Trusted keyboard input completes both new full routes without bails. Chromium phone emulation verifies menu selection and tre gestures, not full new-course phone traversal. No actual phone hardware test has occurred.
+Earlier linked-level evidence is in `tests/artifacts/linked-levels/validation.json`: **310 tests passed** (58 Python, 252 Node). Sequential progression evidence is in `tests/artifacts/level-progression/validation.json`. Trusted keyboard input earns all three complete routes in order without bails. Chromium phone emulation verifies the absence of a level picker and tre gestures. Explicit short-course fixtures verify native next and replay controls on desktop and phone; they do not prove full phone traversal. No actual phone hardware test has occurred.
 
-**Publication is blocked:** `npm run scan` fails despite a score of **99/100** (required 95) and all five engines completing. npm audit reports three high findings through `aislop → micromatch → braces@3.0.3` (`GHSA-vfj7-8cjw-p6xm`). The observed latest braces release is 3.0.3; no fixed release is available in the recorded evidence. No audit waiver, suppression or gate change is applied.
+**Temporary user-authorized audit waiver:** `security/audit-waivers.json` accepts only [GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm) and its two transitive effects in the locked dev-only `aislop@0.16.1 → micromatch@4.0.8 → braces@3.0.3` scanner chain. These packages are not in the game bundle. Authorization is the user deployment override, issued **2026-10-05T06:02:52Z**, expiring **2026-10-19T06:02:52Z**. The audit still reports three high findings; this is not a clean audit or a dependency fix. No patched braces release is available in the recorded evidence. Expiration requires an upstream fix or explicit renewed authorization, never automatic renewal. New findings, changed chains, incomplete audits and inactive waivers fail the gate. The full test suite, all five scanner engines, zero-error requirement and **95/100** minimum remain required. A successful `main` run publishes the checked artifact; this waiver does not establish that deployment has occurred.
 
 Earlier coast-tuning evidence is in `tests/artifacts/coast-tuning/validation.json`. Earlier elevated-line evidence is in `tests/artifacts/elevated-lines-grinds/validation.json`. It records exact test counts, scan results, preserved hashes and screenshots. Core controllers clear the full route at base speed in 90 seconds. The normal-clock browser controller uses trusted keys for an opening boost/coast, charged pops, all four duck bars, flips and grinds, then banks and finishes without teleports. All 49 images embed in both identical offline exports.
 
